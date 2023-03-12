@@ -1,0 +1,40 @@
+#side-bar-handler {
+    min-width: 350px;
+    transition: margin .5s;
+    margin: 0 0 0 -350px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#side-bar-handler.is-nav-open {
+    margin-left: 0;
+}
+
+#open-chat-list {
+    background-color: white;
+}
+
+#side-bar-handler::-webkit-scrollbar {
+    width: 7px;
+    visibility: hidden;
+}
+
+#side-bar-handler::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #0000002e;
+    visibility: hidden;
+}
+
+#side-bar-handler:hover#side-bar-handler::-webkit-scrollbar-thumb {
+    visibility: visible;
+}
+
+
+@media screen and (max-width: 700px) {
+    #side-bar-handler {
+        min-width: 100%;
+        margin-left: -100%;
+    }
+
+    #open-chat-list {}
+}
