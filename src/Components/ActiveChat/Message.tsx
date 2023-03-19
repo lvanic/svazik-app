@@ -3,9 +3,8 @@ import { Card } from "react-bootstrap"
 export const Message = (props: any) => {
     
     return (
-        <div className={`d-flex justify-content-${props.location}`}>
-            {/* <svg viewBox="0 0 11 20" width="11" height="20" className="bubble-tail"><use href="#message-tail-filled"></use></svg>*/}
-            <Card body style={{ width: '20rem' }}>This is some text within a card body.</Card>
+        <div key={props.key} className={`d-flex justify-content-${props.location}`}>
+            <Card className="ps-3 pe-3 pt-2 pb-2 mb-1">{props.text}</Card>
         </div>
     )
 }

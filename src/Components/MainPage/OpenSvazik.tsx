@@ -13,7 +13,7 @@ export const OpenSvazik = () => {
                             Будьте всегда<br /> 
                             на связи<br />
                             со своими близкими<br /> 
-                            вместe с <span className='gradientSvazik'> Svazik </span>
+                            вместe с <span className='gradientSvazik'> Sviazik </span>
                         </b>
                     </h1>
                 </Card.Text>

@@ -5,7 +5,6 @@ import Nav from 'react-bootstrap/esm/Nav';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
 import { UserModel } from '../../models/UserModel';
-import { UserReducer } from '../../Reducers/UserReducer';
 import { RegistrationService } from '../../Services/AuthentificationService';
 
 export const RegistrationForm = (props: any) => {
@@ -43,7 +42,7 @@ export const RegistrationForm = (props: any) => {
                     <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" />
+                    <Form.Check type="checkbox" label="Подписаться на обновления" />
                 </Form.Group>
                 {
                     alertMessage == '' ?

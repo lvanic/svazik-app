@@ -1,5 +1,6 @@
 export const requests ={
     register: '/auth/register',
     authorization: '/auth/login',
-    paginate: '/paginateRooms'
+    paginate: '/paginateRooms',
+    user: '/auth/user'
 }

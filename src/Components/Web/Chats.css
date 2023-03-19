@@ -13,7 +13,6 @@
 #open-chat-list {
     background-color: white;
 }
-
 #side-bar-handler::-webkit-scrollbar {
     width: 7px;
     visibility: hidden;

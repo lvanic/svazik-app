@@ -1,4 +1,36 @@
-.chat-item:hover{
+.chat-item:hover {
     background-color: rgba(0, 0, 0, 0.192);
     cursor: pointer;
+}
+
+.search-dropdown-item {
+    background-color: #f8f9fa00;
+}
+
+.search-dropdown-item:hover {
+    background-color: #f8f9fa00;
+}
+
+.search-dropdown-card {}
+
+.search-dropdown-card:hover {
+    background-color: #c7c7c7
+}
+
+.notify {
+    transition: all 0.3s ease;
+    top: 80px;
+    right: 20px;
+    z-index: 500;
+    width: 70px;
+    height: 70px;
+    background-color: #198754;
+    color: white;
+    border-radius: 35px;
+    overflow: hidden;
+}
+
+.transition {
+    transition: all 0.3s ease;
+    width: 140px;
 }

@@ -1,30 +1,34 @@
-import { FormEventHandler, useEffect, useReducer, useState } from 'react';
+import React from 'react';
+import { FormEventHandler, useContext, useEffect, useReducer, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/esm/Nav';
 import Form from 'react-bootstrap/Form';
 import { useNavigate, useRevalidator } from 'react-router-dom';
-import { AuthorizationRequest } from '../../DTO/AuthorizationRequest';
-import { UserModel } from '../../models/UserModel';
-import { UserReducer } from '../../Reducers/UserReducer';
-import { AuthorizationService } from '../../Services/AuthentificationService';
+import { userState } from '../../Atoms/UserState';
+import {
+    RecoilRoot,
+    atom,
+    selector,
+    useRecoilState,
+    useRecoilValue,
+} from 'recoil';
+import { AuthorizationService, UserService } from '../../Services/AuthentificationService';
+import { socketState } from '../../Atoms/SocketState';
+import { io } from 'socket.io-client';
 
 export const AuthorizationForm = (props: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const initialState = new UserModel('', '', false);
+    const [user, setUser] = useRecoilState(userState);
+    const [socket, setSocket] = useRecoilState(socketState)
     const navigator = useNavigate();
-    const [user, dispatch] = useReducer(UserReducer, initialState);
-    useEffect(() => {
-        console.log(user);
-        if (user.isAuthorized) {
+
+    const Authorization = async () => {
+        const userHandler = await AuthorizationService(email, password);
+        if (userHandler.isAuthorized) {
+            setUser(userHandler);
             navigator('/web')
         }
-    }, [user])
-    const Authorization = async () => {
-        dispatch({
-            type: 'SET_USER',
-            payload: await AuthorizationService(email, password)
-        })
     }
 
     return (

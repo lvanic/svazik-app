@@ -46,3 +46,24 @@ export async function RegistrationService(_username: string, _email: string, _pa
         return false;
     }
 }
+
+export async function UserService(): Promise<UserModel> {
+    
+    const server = process.env.REACT_APP_SERVER_NAME;
+    let userHandler = new UserModel('', '', false);
+    const requestConfig = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': `${localStorage.getItem('access_token')}`
+        },
+    }
+    const response = await fetch(`${server + requests.user} `, requestConfig);
+    const data = await response.json();
+    localStorage.setItem('access_token', data.access_token);
+    if (response.status == 200) {
+        userHandler = new UserModel(data.username, data.email, true);
+    }
+
+    return userHandler;
+}
