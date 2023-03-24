@@ -13,18 +13,13 @@ import { RegistrationForm } from "./RegistrationForm"
 export const Authentification = () => {
     const [isAuthorization, setIsAuthorization] = useState(true);
     const [user, setUser] = useRecoilState(userState);
-    const [socket, setSocket] = useRecoilState(socketState)
     const navigator = useNavigate();
+
     useEffect(() => {
-        if (user.isAuthorized) {
-            setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
-                extraHeaders: {
-                    authorization: `${localStorage.getItem('access_token')}`
-                }
-            }))
+        if (user.isAuthorized)
             navigator('/web')
-        }
     }, [user])
+
     return (
         <main>
             {

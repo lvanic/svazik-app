@@ -1,7 +1,8 @@
 import { atom } from "recoil";
+import { NotifyModel } from "../models/NotifyModel";
 
 
-let initValue = [{ chatId: -1, message: 'Пока что тут пусто' }]
+let initValue: NotifyModel[] = []
 export const notifyState = atom({
     key: 'notify',
     default: initValue,

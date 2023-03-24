@@ -3,6 +3,7 @@ import { Navbar, Container, Offcanvas, Nav, NavDropdown, Button, Card, CardGroup
 import Form from 'react-bootstrap/Form';
 import { useRecoilState } from "recoil";
 import { activeChatState } from "../../Atoms/ActiveChat";
+import { socketState } from "../../Atoms/SocketState";
 import { IChat } from "../../Interfaces/IChat";
 import { ChatCard } from "./ChatCard";
 import './Chats.css'
@@ -13,13 +14,14 @@ export const Chats = (props: any) => {
     const navRef = useRef(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [activeChat, setActiveChat] = useRecoilState(activeChatState)
-
+    const [socket, setSocket] = useRecoilState(socketState)
     const modalClose = () => setModalOpen(false);
     const modalOpen = () => setModalOpen(true);
 
     const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
-        console.log(event.currentTarget.scrollTop);
-        console.log(event.currentTarget.offsetHeight);
+        if (event.currentTarget.scrollTop > event.currentTarget.scrollHeight - event.currentTarget.clientHeight) {
+            props.setPage(props.page + 1)
+        }
     };
 
     useEffect(() => {
@@ -45,7 +47,7 @@ export const Chats = (props: any) => {
     }
     return (
         <>
-            <Nav className="d-flex flex-row mh-100 is-nav-open" id="side-bar-handler" ref={navRef} style={{ height: '100vh' }}>
+            <Nav onScroll={handleScroll} className="d-flex flex-row mh-100 is-nav-open" id="side-bar-handler" ref={navRef} style={{ height: '100vh' }}>
                 <Nav.Item className="min-vh-100 w-100 p-0">
                     <Nav.Item id="chat-cards" className="p-0 border-0 h-100 pt-2 w-100">
                         <Form className="d-flex position-fixed" style={{ zIndex: '5' }}>
@@ -62,7 +64,7 @@ export const Chats = (props: any) => {
                                 </svg>
                             </Button>
                         </Form>
-                        <CardGroup onScroll={handleScroll} className="d-flex flex-column" style={{ marginTop: '40px' }}>
+                        <CardGroup className="d-flex flex-column" style={{ marginTop: '40px' }}>
                             {
                                 props.chatList.map((item: IChat) => (
                                     <ChatCard key={item.id} title={item.name} description={item.description} onClick={() => chatSelect(item.id, item.name, item.description)} />

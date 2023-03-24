@@ -23,11 +23,16 @@ export const AuthorizationForm = (props: any) => {
     const [socket, setSocket] = useRecoilState(socketState)
     const navigator = useNavigate();
 
-    const Authorization = async () => {
+    const Authorization = async (e: any) => {
         const userHandler = await AuthorizationService(email, password);
         if (userHandler.isAuthorized) {
+            // alert()
+            setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
+                extraHeaders: {
+                    authorization: `${localStorage.getItem('access_token')}`
+                }
+            }).connect());
             setUser(userHandler);
-            navigator('/web')
         }
     }
 

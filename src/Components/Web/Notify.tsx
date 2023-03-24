@@ -13,14 +13,14 @@ export const Notify = (props: any) => {
 
     return (
         <div ref={divRef}
-            onClick={() => { setIsNotify(!isNotify) }}
+            onClick={(e) => { setIsNotify(!isNotify) }}
             className="position-absolute d-flex border p-2 notify transition align-items-center justify-content-center">
-            {
+            {/* {
                 divRef.current?.classList.contains('transition') ?
                     Notifies.length 
                     :
                     Notifies[Notifies.length - 1].message
-            }
+            } */}
         </div>
     );
 }

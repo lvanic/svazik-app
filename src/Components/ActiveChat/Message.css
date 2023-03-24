@@ -1,0 +1,38 @@
+.messages .justify-content-start{
+        padding-right: 25%;
+}
+.messages .justify-content-end{
+    padding-left: 25%;
+}
+
+.message-handler {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 90vh;
+    /* margin-right: 80px; */
+}
+
+.messages {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 83vh;
+    padding-right: 10%;
+    margin-left: 10%;
+}
+
+.messages::-webkit-scrollbar{
+    width: 7px;
+    visibility: hidden;
+}
+.messages::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #ffffff70;
+}
+
+.message-input {
+    height: 50px;
+    width: 100%;
+    padding-right: 10%;
+    padding-left: 10%;
+}

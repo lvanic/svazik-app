@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { io } from "socket.io-client";
@@ -8,7 +8,7 @@ import { socketState } from "../../Atoms/SocketState";
 import { userState } from "../../Atoms/UserState";
 import { IChat } from "../../Interfaces/IChat";
 import { MessageModel } from "../../models/MessageModel";
-import { GetChatsForUser, JoinRoom } from "../../Services/ChatServices";
+import { getChatsForUser, joinRoom } from "../../Services/ChatServices";
 import { ActiveChat } from "../ActiveChat/ActiveChat";
 import { Chats } from "./Chats";
 import { Notify } from "./Notify";
@@ -19,38 +19,62 @@ export const Web = () => {
     const [isSideBarOpen, setSideBarOpen] = useState(true)
     const [socket, setSocket] = useRecoilState(socketState);
     const [prevActiveChatId, setPrevActiveChatId] = useState(activeChat.id)
-    const [page, setPage] = useState(1)
+    const [page, setPage] = useState(0)
+    const [isSocketConnected, setSocketConnected] = useState(false)
     const [Notifies, setNotifies] = useRecoilState(notifyState)
+
     const KeyClick = (e: any) => {
-        if (e.keyCode === 27) {
-            console.log(activeChat.id);
+        //при нажатии на esc закрывать активный чат и открывать список чатов
+        if (e.keyCode == 27) {
+            setActiveChat({ ...activeChat, id: -1 })
         }
     }
+    useLayoutEffect(() => {
+        //socket on connect
+        socket.on('connect', () => {
+            setSocketConnected(true)
+        }
+        )
+    }, [])
+
     useEffect(() => {
+        //при нажатии на esc закрывать активный чат и открывать список чатов
+        document.addEventListener('keydown', KeyClick, false);
+        return () => {
+            document.removeEventListener('keydown', KeyClick, false);
+        }
+    }, [])
+
+    useLayoutEffect(() => {
         socket.on('rooms', data => {
+            console.log(data);
             if (data.meta.itemCount > 0) {
-                setChatList(chatList.concat(data.items))
+                //add new chat to chat list to the end of the list
+                setChatList([...chatList, ...data.items])
+            }
+            else {
             }
         })
-        GetChatsForUser(socket, page);
-
-    }, [])
+        console.log('page' + page);
+        getChatsForUser(socket, page);
+    }, [page])
 
     useEffect(() => {
         if (activeChat.id != -1) {
             socket.on('messages', data => {
                 let messages: MessageModel[] = [...data.items];
                 messages.reverse()
-                console.log(messages);
-
                 setActiveChat({ ...activeChat, messages: messages })
             })
-            JoinRoom(activeChat.id, socket, 1)
+
+            joinRoom(activeChat.id, socket, 1)
+
             if (prevActiveChatId != -1) {
                 socket.emit('leaveRoom', { id: prevActiveChatId })
                 setPrevActiveChatId(activeChat.id)
             }
         }
+        
     }, [activeChat.id])
 
     useEffect(() => {
@@ -60,10 +84,11 @@ export const Web = () => {
                 setActiveChat({ ...activeChat, messages: [...activeChat.messages, messageHandler] })
             }
             else {
-                setNotifies([...Notifies, { message: message.text, chatId: message.room.id }])
+                // setNotifies([...Notifies, { message: message.text, chatId: message.room.id }])
             }
         })
         socket.on('messagePaginated', data => {
+            console.log(data);
             let messages: MessageModel[] = [...data.items];
             messages.reverse()
             setActiveChat({ ...activeChat, messages: messages.concat(activeChat.messages) })
@@ -73,7 +98,7 @@ export const Web = () => {
     return (
         <div className='d-flex' style={{ overflow: 'hidden' }}>
             <Notify />
-            <Chats chatList={chatList} isSideBarOpen={isSideBarOpen} setSideBarOpen={setSideBarOpen} />
+            <Chats page={page} setPage={setPage} chatList={chatList} isSideBarOpen={isSideBarOpen} setSideBarOpen={setSideBarOpen} />
             <ActiveChat isSideBarOpen={isSideBarOpen} setSideBarOpen={setSideBarOpen} />
         </div>
     );

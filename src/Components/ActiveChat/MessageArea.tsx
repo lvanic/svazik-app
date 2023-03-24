@@ -4,7 +4,7 @@ import { activeChatState } from "../../Atoms/ActiveChat";
 import { userState } from "../../Atoms/UserState";
 import { MessageInput } from "./MessageInput";
 import { Message } from "./Message"
-import { PuginateMessages } from "../../Services/ChatServices";
+import { puginateMessages } from "../../Services/ChatServices";
 import { socketState } from "../../Atoms/SocketState";
 
 export const MessageArea = (props: any) => {
@@ -14,7 +14,7 @@ export const MessageArea = (props: any) => {
     const endChatRef = useRef<HTMLDivElement | null>(null);
     const [page, setPage] = useState(1);
 
-    useEffect(() => {
+    useEffect(() => {//last or saved(may be)
         endChatRef?.current?.lastElementChild?.scrollIntoView({ behavior: "smooth" });
     }, [activeChat.messages.length])
 
@@ -24,7 +24,7 @@ export const MessageArea = (props: any) => {
 
     const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
         if (event.currentTarget.scrollTop == 0) {
-            PuginateMessages(activeChat.id, socket, page)
+            puginateMessages(activeChat.id, socket, page)
             setPage(page + 1)
         }
     };

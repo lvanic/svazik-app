@@ -9,11 +9,11 @@ import './ChatHeader.css'
 
 export const ActiveChatHeader = (props: any) => {
     const [activeChat, setActiveChar] = useRecoilState(activeChatState);
-    const openHandler = () => {
+    const openHandler = (e: any) => {
         props.setSideBarOpen(true)
     }
-    const StartCall = async () => {
-        props.StartCall();
+    const StartCall = async (e: any) => {
+        props.StartCall(e);
     }
     return (
         <Navbar bg="light" expand="lg" className="border d-dlex justify-content-start" id="chat-header">

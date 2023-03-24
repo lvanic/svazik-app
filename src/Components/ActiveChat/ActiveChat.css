@@ -23,33 +23,3 @@
 .chat-place-holder:hover.chat-place-holder::-webkit-scrollbar-thumb {
     visibility: visible;
 }
-
-.message-handler {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 90vh;
-    /* margin-right: 80px; */
-}
-
-.messages {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    max-height: 83vh;
-    padding-right: 100px;
-    margin-left: 100px;
-}
-
-.messages::-webkit-scrollbar{
-    width: 7px;
-    visibility: hidden;
-}
-.messages::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #ffffff70;
-}
-
-.message-input {
-    height: 50px;
-    padding-right: 100px;
-}

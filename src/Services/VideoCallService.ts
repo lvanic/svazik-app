@@ -1,6 +1,5 @@
 import { useReducer } from "react";
 import { io } from "socket.io-client";
-import { SocketReducer } from "../Reducers/SocketReducer";
 
 //Establish a peer to peer connection between multiple clients
 

@@ -3,24 +3,22 @@ import { Modal, Button, Form } from "react-bootstrap"
 import { useRecoilValue } from "recoil"
 import { io } from "socket.io-client"
 import { socketState } from "../../Atoms/SocketState"
-import { SocketReducer } from "../../Reducers/SocketReducer"
 
 export const CreateRoom = (props: any) => {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const socket = useRecoilValue(socketState);
     const createRoom = async () => {
-        console.log(socket)
-        socket.on('createRoom', (data) => console.log(data));
-        
         let object = {
             name: name,
             description: description
         }
         try {
             socket.emit('createRoom', object)
-        } catch {
+            props.handleClose()
             
+        } catch {
+
         }
 
     }
@@ -42,7 +40,7 @@ export const CreateRoom = (props: any) => {
                 <Button variant="secondary" onClick={props.handleClose}>
                     Закрыть
                 </Button>
-                <Button variant="primary" onClick={() => createRoom()}>
+                <Button variant="primary" onClick={(e) => createRoom()}>
                     Создать
                 </Button>
             </Modal.Footer>

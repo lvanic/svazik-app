@@ -9,23 +9,10 @@ import { VideoCall } from "../VideoCall";
 
 export const ActiveChat = (props: any) => {
     const [activeChat, setActiveChat] = useRecoilState(activeChatState);
-    const [isVideo, setIsVideo] = useState(false);
-    const [isAudio, setIsAudio] = useState(false);
 
-    const webcamRef = useRef<HTMLVideoElement>(null);
-    const micRef = useRef<HTMLVideoElement>(null);
-    const screenShareRef = useRef(null);
-    
-    const [localStream, setLocalStream] = useState<MediaStream>();
     const [isCallStarted, setIsCallStarted] = useState(false);
-    useEffect(() => {
-        if (isCallStarted) {
-            getVideo();
-        }
-    }, [isVideo, isAudio, isCallStarted]);
 
-
-    const StartCall = async () => {
+    const StartCall = async (e: any) => {
         setIsCallStarted(true);
     }
 
@@ -68,15 +55,7 @@ export const ActiveChat = (props: any) => {
             <MessageArea />
             {
                 isCallStarted ?
-                    <VideoCall
-                        webcamRef={webcamRef}
-                        micRef={micRef}
-                        setIsAudio={setIsAudio}
-                        setIsVideo={setIsVideo}
-                        isVideo={isVideo}
-                        isAudio={isAudio}
-                        localStream={localStream}
-                    />
+                    <VideoCall />
                     :
                     null
             }

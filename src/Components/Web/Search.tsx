@@ -4,7 +4,7 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { activeChatState } from "../../Atoms/ActiveChat"
 import { socketState } from "../../Atoms/SocketState"
 import { ChatModel } from "../../models/ChatModel"
-import { EnterRoom, SearchRooms } from "../../Services/ChatServices"
+import { enterRoom, searchRooms } from "../../Services/ChatServices"
 
 export const Search = () => {
     const [searchList, setSearchList] = useState<ChatModel[]>()
@@ -17,9 +17,10 @@ export const Search = () => {
         if (searchList?.length != 0 && searchList?.length != undefined && searchString != '')
             setIsDropdown(true);
     }
-    const DeactivateDropdown = (e: any) => {
-        setIsDropdown(false)
+    const DeactivateDropdown = () => {
+        setSearchString('');
     }
+
     useEffect(() => {
         socket.on('searchedRooms', data => {
             if (data.length != 0) {
@@ -31,7 +32,7 @@ export const Search = () => {
 
     useEffect(() => {
         if (searchString !== '') {
-            SearchRooms(socket, searchString)
+            searchRooms(socket, searchString)
         }
         else {
             setIsDropdown(false)
@@ -39,7 +40,7 @@ export const Search = () => {
     }, [searchString])
 
     const chatSelect = (_id: number, title: string, description: string) => {
-        EnterRoom(_id, socket);
+        enterRoom(_id, socket);
         setActiveChat({ ...activeChat, id: _id, name: title, description: description })
     }
 
@@ -55,13 +56,17 @@ export const Search = () => {
                 aria-label="Search"
                 onChange={ChangeSearchString}
                 value={searchString}
+                onSubmit={() => { }}
             />
             <Dropdown.Menu show={isDropdown}
                 className="mt-2 w-75">
                 {
                     searchList?.map((element, index) =>
                         <Dropdown.Item style={{ overflow: 'hidden' }}
-                            onClick={() => chatSelect(element.id, element.name, element.description)}
+                            onClick={(e) => {
+                                DeactivateDropdown();
+                                chatSelect(element.id, element.name, element.description)
+                            }}
                             key={index}
                             className='p-0 search-dropdown-item' >
                             <Card className='border-0 mb-1 mt-1 search-dropdown-card'>

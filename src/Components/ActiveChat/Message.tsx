@@ -1,5 +1,5 @@
 import { Card } from "react-bootstrap"
-
+import './Message.css'
 export const Message = (props: any) => {
     
     return (
