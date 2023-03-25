@@ -65,6 +65,7 @@ function App() {
           </>
         } />
         <Route path='/web' element={<Authorize Component={<Web />} />} />
+        
       </Routes>
     </Router>
 

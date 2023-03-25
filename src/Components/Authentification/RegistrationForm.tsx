@@ -28,6 +28,9 @@ export const RegistrationForm = (props: any) => {
         if (confirmPassword != password) {
             setAlertMessage('Пароли не совпадают')
         }
+        else{
+            setAlertMessage('')
+        }
     }, [confirmPassword, password])
     const Register = async () => {
         if (canRegister) {
