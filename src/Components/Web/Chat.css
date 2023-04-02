@@ -18,19 +18,22 @@
 }
 
 .notify {
+    visibility: hidden;
     transition: all 0.3s ease;
-    top: 80px;
-    right: 20px;
+    bottom: 20px;
+    left: 20px;
     z-index: 500;
     width: 70px;
-    height: 70px;
-    background-color: #198754;
-    color: white;
-    border-radius: 35px;
+    height: 140px;
+    background-color: #898989;
+    color: rgb(0, 0, 0);
+    border-radius: 10px;
     overflow: hidden;
+    font-size: 15px;
 }
 
 .transition {
     transition: all 0.3s ease;
-    width: 140px;
+    width: 300px;
+    visibility: visible;
 }

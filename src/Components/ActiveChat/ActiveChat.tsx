@@ -9,40 +9,21 @@ import { VideoCall } from "../VideoCall";
 
 export const ActiveChat = (props: any) => {
     const [activeChat, setActiveChat] = useRecoilState(activeChatState);
-
+    const [socket, setSocket] = useRecoilState(socketState)
     const [isCallStarted, setIsCallStarted] = useState(false);
+    const [callerSignal, setCallerSignal] = useState<any>()
+    const [receivingCall, setReceivingCall] = useState(false)
 
     const StartCall = async (e: any) => {
         setIsCallStarted(true);
     }
 
-    const getVideo = () => {
-
-        //record audio and video from a webcam into localStream
-
-
-        // navigator.mediaDevices
-        //     .getUserMedia({
-        //         video: isVideo,
-        //         audio: isAudio,
-        //     })
-        //     .then(stream => {
-        //         if (!isAudio && !isVideo) {
-        //             stream.getTracks().forEach(track => track.stop());
-        //         }
-        //         else {
-        //             const video: any = videoRef.current;
-        //             video.srcObject = stream;
-        //             setLocalStream(stream)
-        //             video.play();
-        //         }
-        //     })
-        //     .catch(err => {
-        //         console.error("error:", err);
-        //     });
-
-    };
-
+    useEffect(() => {
+        socket.on("callRequest", (data) => {
+            setReceivingCall(true)
+            setCallerSignal(data.signal)
+        })
+    }, [])
 
     return (
         <div className="chat-place-holder">
@@ -54,8 +35,8 @@ export const ActiveChat = (props: any) => {
             }
             <MessageArea />
             {
-                isCallStarted ?
-                    <VideoCall />
+                isCallStarted || receivingCall ?
+                    <VideoCall callerSignal={callerSignal} />
                     :
                     null
             }

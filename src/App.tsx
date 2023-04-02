@@ -18,16 +18,19 @@ import { useRecoilState } from 'recoil';
 import { userState } from './Atoms/UserState';
 import { io } from 'socket.io-client';
 import { socketState } from './Atoms/SocketState';
-
+import process from 'process';
 
 function App() {
   const [user, setUser] = useRecoilState(userState);
-  const [socket, setSocket] = useRecoilState(socketState)
+  const [socket, setSocket] = useRecoilState(socketState);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    window.process = process;
+  }, []);
+
+  useEffect(() => {
     UserService().then((userHandler) => {
       if (userHandler.isAuthorized) {
-        // alert(localStorage.getItem('access_token'))
         setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
           extraHeaders: {
             authorization: `${localStorage.getItem('access_token')}`
@@ -37,15 +40,7 @@ function App() {
       }
     });
   }, [])
-  // useEffect(() => {
-  //   socket.on('connect', () => {
-      
-  //   })
-  //   socket.on('disconnect', () => {
-      
-  //   }
-  //   )
-  // }, [socket])
+
   return (
     <Router>
       <Routes>
@@ -65,7 +60,7 @@ function App() {
           </>
         } />
         <Route path='/web' element={<Authorize Component={<Web />} />} />
-        
+
       </Routes>
     </Router>
 

@@ -10,11 +10,13 @@
     "@types/node": "^16.18.12",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/simple-peer": "^9.11.5",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "dotenv": "^16.0.3",
     "jsencrypt": "^3.3.2",
     "openpgp": "^5.7.0",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-sidebar-menu": "^2.0.3",
@@ -22,7 +24,7 @@
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
-    "simple-peer": "^9.11.1",
+    "simple-peer": "^9.9.3",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "typescript": "^4.9.5",
@@ -51,8 +53,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/simple-peer": "^9.11.5"
   }
 }

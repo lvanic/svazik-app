@@ -11,43 +11,47 @@ export const VideoCall = (props: any) => {
     const [socket, setSocket] = useRecoilState(socketState);
     const [activeChat, setActiveChat] = useRecoilState(activeChatState)
 
-    const [stream, setStream] = useState<any>()
-    const [receivingCall, setReceivingCall] = useState(false)
-    const [caller, setCaller] = useState("")
-    const [callerSignal, setCallerSignal] = useState<any>()
+    const [stream, setStream] = useState<any>(null)
+    const [userStream, setUserStream] = useState<any>([])
+
     const [callAccepted, setCallAccepted] = useState(false)
-    const [idToCall, setIdToCall] = useState("")
     const [callEnded, setCallEnded] = useState(false)
-    const [name, setName] = useState("")
+
     const myVideo = useRef<any>()
-    const userVideo = useRef<any>()
+    const userVideo = useRef<any>([])
+
     const connectionRef = useRef<any>()
+
+    useEffect(() => {
+        console.log(connectionRef);
+
+    }, [connectionRef])
 
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream: any) => {
             setStream(stream)
-            myVideo.current.srcObject = stream
         })
 
-        socket.on("callRequest", (data) => {
-            setReceivingCall(true)
-            setCallerSignal(data.signal)
-            setCaller(data.from.username)
-        })
-        
     }, [])
 
-    const callUser = (id: any) => {
+    useEffect(() => {
+        if (myVideo.current != undefined) {
+            myVideo.current.srcObject = stream
+        }
+    }, [stream])
+
+    useEffect(() => {
+        if (userVideo.current != undefined) {
+            userVideo.current.srcObject = userStream
+        }
+        console.log(userStream);
+    }, [userStream])
+
+    const callRoom = () => {
         const peer = new Peer({
             initiator: true,
             trickle: false,
-            stream: stream,
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }
-                ]
-            }
+            stream: stream
         })
 
         peer.on("signal", (data: any) => {
@@ -58,42 +62,39 @@ export const VideoCall = (props: any) => {
                 signalData: data
             })
         })
+
         peer.on("stream", (stream) => {
-            userVideo.current.srcObject = stream
+            setUserStream(stream)
         })
-        socket.on("callAccepted", (signal) => {
+
+        socket.on("callAccepted", (signal) => {//+            
             setCallAccepted(true)
-            peer.signal(signal)
+            peer.signal(signal.signal)
         })
 
         connectionRef.current = peer
     }
 
-    const answerCall = () => {
+    const answerCall = (e: any) => {
         setCallAccepted(true)
         const peer = new Peer({
             initiator: false,
             trickle: false,
-            stream: stream,
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }
-                ]
-            }
+            stream: stream
         })
+
         peer.on("signal", (data) => {
             socket.emit("answerCall", {
                 signal: data,
                 room: { id: activeChat.id },
             })
         })
-        peer.on("stream", (stream) => {
-            console.log(stream);
-            userVideo.current.srcObject = stream
+
+        peer.on("stream", (stream) => {//+
+            setUserStream(stream)
         })
 
-        peer.signal(callerSignal)
+        peer.signal(props.callerSignal)
         connectionRef.current = peer
     }
 
@@ -107,11 +108,11 @@ export const VideoCall = (props: any) => {
             <div className="container">
                 <div className="video-container">
                     <div className="video">
-                        {stream && <video playsInline ref={myVideo} autoPlay style={{ width: "300px" }} />}
+                        {stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "301px" }} />}
                     </div>
                     <div className="video">
                         {callAccepted && !callEnded ?
-                            <video playsInline ref={userVideo} autoPlay style={{ width: "300px" }} /> :
+                            <video playsInline ref={userVideo} autoPlay style={{ width: "301px" }} /> :
                             null}
                     </div>
                 </div>
@@ -123,17 +124,16 @@ export const VideoCall = (props: any) => {
                                 End Call
                             </Button>
                         ) : (
-                            <Button color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+                            <Button color="primary" aria-label="call" onClick={callRoom}>
                                 Call
                             </Button>
                         )}
-                        {idToCall}
                     </div>
                 </div>
                 <div>
-                    {receivingCall && !callAccepted ? (
+                    {props.callerSignal != undefined && !callAccepted ? (
                         <div className="caller">
-                            <h1 >{name} is calling...</h1>
+                            <h1 >Звонок</h1>
                             <Button variant="contained" color="primary" onClick={answerCall}>
                                 Answer
                             </Button>

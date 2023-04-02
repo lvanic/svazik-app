@@ -14,9 +14,11 @@ export const CreateRoom = (props: any) => {
             description: description
         }
         try {
+            console.log(socket);
+
             socket.emit('createRoom', object)
             props.handleClose()
-            
+
         } catch {
 
         }

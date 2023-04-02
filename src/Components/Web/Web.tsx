@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
 import { io } from "socket.io-client";
 import { activeChatState } from "../../Atoms/ActiveChat";
 import { notifyState } from "../../Atoms/NotifyState";
@@ -19,23 +19,15 @@ export const Web = () => {
     const [isSideBarOpen, setSideBarOpen] = useState(true)
     const [socket, setSocket] = useRecoilState(socketState);
     const [prevActiveChatId, setPrevActiveChatId] = useState(activeChat.id)
+    const [user, setUser] = useRecoilState(userState);
     const [page, setPage] = useState(0)
-    const [isSocketConnected, setSocketConnected] = useState(false)
-    const [Notifies, setNotifies] = useRecoilState(notifyState)
+    const [notifies, setNotifies] = useRecoilState(notifyState)
 
-    const KeyClick = (e: any) => {
-        //при нажатии на esc закрывать активный чат и открывать список чатов
+    const KeyClick = (e: any) => { //при нажатии на esc закрывать активный чат и открывать список чатов
         if (e.keyCode == 27) {
             setActiveChat({ ...activeChat, id: -1 })
         }
     }
-    useLayoutEffect(() => {
-        //socket on connect
-        socket.on('connect', () => {
-            setSocketConnected(true)
-        }
-        )
-    }, [])
 
     useEffect(() => {
         //при нажатии на esc закрывать активный чат и открывать список чатов
@@ -45,18 +37,27 @@ export const Web = () => {
         }
     }, [])
 
-    useLayoutEffect(() => {
-        socket.on('rooms', data => {
-            console.log(data);
-            if (data.meta.itemCount > 0) {
-                //add new chat to chat list to the end of the list
-                setChatList([...chatList, ...data.items])
-            }
-            else {
-            }
+    useEffect(() => {
+        socket.on('notify', data => {
+            setNotifies([...notifies, { message: data.message, chatId: data.chatId, chatName: data.chatName }])
         })
-        console.log('page' + page);
-        getChatsForUser(socket, page);
+        return (() => {
+            socket.removeAllListeners("notify");
+        })
+    }, [notifies])
+
+    useEffect(() => {
+        if (user.isAuthorized) {
+            socket.on('rooms', data => {
+                console.log(data);
+                setRooms(data)
+            })
+            if (page != 0)
+                getChatsForUser(socket, page);
+        }
+        return (() => {
+            socket.removeAllListeners("rooms");
+        })
     }, [page])
 
     useEffect(() => {
@@ -67,14 +68,19 @@ export const Web = () => {
                 setActiveChat({ ...activeChat, messages: messages })
             })
 
-            joinRoom(activeChat.id, socket, 1)
-
             if (prevActiveChatId != -1) {
                 socket.emit('leaveRoom', { id: prevActiveChatId })
                 setPrevActiveChatId(activeChat.id)
             }
+            else {
+                setPrevActiveChatId(activeChat.id)
+            }
+            joinRoom(activeChat.id, socket, 1)
         }
-        
+        return (() => {
+            socket.removeAllListeners("messages");
+        })
+
     }, [activeChat.id])
 
     useEffect(() => {
@@ -87,13 +93,28 @@ export const Web = () => {
                 // setNotifies([...Notifies, { message: message.text, chatId: message.room.id }])
             }
         })
+
         socket.on('messagePaginated', data => {
             console.log(data);
             let messages: MessageModel[] = [...data.items];
             messages.reverse()
             setActiveChat({ ...activeChat, messages: messages.concat(activeChat.messages) })
         })
+
+        return (() => {
+            socket.removeAllListeners("messageAdded");
+            socket.removeAllListeners("messagePaginated");
+        })
     }, [activeChat.messages])
+
+    const setRooms = (data: any) => {
+        if (data.meta.itemCount > 0) {
+            //add new chat to chat list to the end of the list
+            setChatList([...chatList, ...data.items])
+        }
+        else {
+        }
+    }
 
     return (
         <div className='d-flex' style={{ overflow: 'hidden' }}>
