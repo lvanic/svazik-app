@@ -17,22 +17,41 @@ export const VideoCall = (props: any) => {
     const [callAccepted, setCallAccepted] = useState(false)
     const [callEnded, setCallEnded] = useState(false)
 
+    const [mySignal, setMySignal] = useState<any>(null)
+    const [callerSignal, setCallerSignal] = useState<any>(props.callerSignal)
+
     const myVideo = useRef<any>()
     const userVideo = useRef<any>([])
 
     const connectionRef = useRef<any>()
 
-    useEffect(() => {
-        console.log(connectionRef);
-
-    }, [connectionRef])
 
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream: any) => {
             setStream(stream)
         })
+        if (callerSignal == undefined) {
+            socket.emit('getCallerSignal', { room: { id: activeChat.id } })
+        }
 
     }, [])
+
+    useEffect(() => {
+        console.log(props.callerSignal);
+        console.log(callerSignal);
+    }, [props.callerSignal])
+
+    useEffect(() => {
+        socket.on('getCallerSignal', (data: any) => {
+            if (mySignal != null) {
+                console.log(mySignal);
+                socket.emit('callRequest', {
+                    signal: mySignal,
+                    room: { id: activeChat.id },
+                })
+            }
+        })
+    }, [mySignal])
 
     useEffect(() => {
         if (myVideo.current != undefined) {
@@ -55,11 +74,13 @@ export const VideoCall = (props: any) => {
         })
 
         peer.on("signal", (data: any) => {
+            setMySignal(data)
             socket.emit("callRequest", {
                 room: {
-                    id: activeChat.id
+                    id: activeChat.id,
+                    name: activeChat.name
                 },
-                signalData: data
+                signalData: mySignal
             })
         })
 
@@ -68,6 +89,11 @@ export const VideoCall = (props: any) => {
         })
 
         socket.on("callAccepted", (signal) => {//+            
+            setCallAccepted(true)
+            peer.signal(signal.signal)
+        })
+
+        socket.on("connectToCall", (signal) => {           
             setCallAccepted(true)
             peer.signal(signal.signal)
         })
@@ -84,8 +110,9 @@ export const VideoCall = (props: any) => {
         })
 
         peer.on("signal", (data) => {
+            setMySignal(data)
             socket.emit("answerCall", {
-                signal: data,
+                signal: mySignal,
                 room: { id: activeChat.id },
             })
         })
@@ -94,7 +121,35 @@ export const VideoCall = (props: any) => {
             setUserStream(stream)
         })
 
-        peer.signal(props.callerSignal)
+        socket.on("connectToCall", (signal) => {           
+            setCallAccepted(true)
+            peer.signal(signal.signal)
+        })
+
+        peer.signal(callerSignal)
+        connectionRef.current = peer
+    }
+
+    const connectRoom = () => {
+        const peer = new Peer({
+            initiator: false,
+            trickle: false,
+            stream: stream
+        })
+
+        peer.on("signal", (data) => {
+            socket.emit("connectToCall", {
+                signal: data,
+                room: { id: activeChat.id },
+            })
+        })
+
+        peer.on("stream", (stream) => {//+
+            setUserStream(stream)
+        })
+        
+        if (callerSignal != undefined)
+            peer.signal(callerSignal)
         connectionRef.current = peer
     }
 
@@ -104,7 +159,7 @@ export const VideoCall = (props: any) => {
     }
 
     return (
-        <div className="position-absolute d-flex" style={{ background: 'gray', top: '10%' }}>
+        <div className="position-absolute" style={{ background: 'gray', width: '100%', top: '20%' }}>
             <div className="container">
                 <div className="video-container">
                     <div className="video">
@@ -123,6 +178,12 @@ export const VideoCall = (props: any) => {
                             <Button variant="contained" color="secondary" onClick={leaveCall}>
                                 End Call
                             </Button>
+                        ) : props.isConnectToCall ? (
+                            <div >
+                                <Button color="primary" aria-label="call" onClick={connectRoom}>
+                                    Connect
+                                </Button>
+                            </div>
                         ) : (
                             <Button color="primary" aria-label="call" onClick={callRoom}>
                                 Call
@@ -131,7 +192,7 @@ export const VideoCall = (props: any) => {
                     </div>
                 </div>
                 <div>
-                    {props.callerSignal != undefined && !callAccepted ? (
+                    {callerSignal != undefined && !callAccepted ? (
                         <div className="caller">
                             <h1 >Звонок</h1>
                             <Button variant="contained" color="primary" onClick={answerCall}>
@@ -141,7 +202,7 @@ export const VideoCall = (props: any) => {
                     ) : null}
                 </div>
             </div>
-        </div>
+        </div >
     )
 
 } 

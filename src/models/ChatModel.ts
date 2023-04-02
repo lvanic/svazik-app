@@ -8,12 +8,14 @@ export class ChatModel {
     users: UserModel[];
     admins: UserModel[];
     messages: MessageModel[];
-    constructor(_id: number,_name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[]) {
+    isCall: boolean;
+    constructor(_id: number,_name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[], _isCall: boolean) {
         this.id = _id;
         this.name = _name;
         this.description = _description;
         this.users = _users;
         this.admins = _admins;
         this.messages = _messages;
+        this.isCall = _isCall;
     }
 }

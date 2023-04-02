@@ -52,8 +52,8 @@ export const Web = () => {
                 console.log(data);
                 setRooms(data)
             })
-            if (page != 0)
-                getChatsForUser(socket, page);
+            // if (page != 0)
+            getChatsForUser(socket, page);
         }
         return (() => {
             socket.removeAllListeners("rooms");
@@ -63,9 +63,9 @@ export const Web = () => {
     useEffect(() => {
         if (activeChat.id != -1) {
             socket.on('messages', data => {
-                let messages: MessageModel[] = [...data.items];
+                let messages: MessageModel[] = [...data.messages.items];
                 messages.reverse()
-                setActiveChat({ ...activeChat, messages: messages })
+                setActiveChat({ ...activeChat, messages: messages, isCall: data.room.isCall })
             })
 
             if (prevActiveChatId != -1) {

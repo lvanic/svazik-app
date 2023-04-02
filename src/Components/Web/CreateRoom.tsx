@@ -11,7 +11,8 @@ export const CreateRoom = (props: any) => {
     const createRoom = async () => {
         let object = {
             name: name,
-            description: description
+            description: description,
+            isCall: false
         }
         try {
             console.log(socket);

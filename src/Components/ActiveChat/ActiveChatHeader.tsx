@@ -8,7 +8,7 @@ import { ChatModel } from "../../models/ChatModel";
 import './ChatHeader.css'
 
 export const ActiveChatHeader = (props: any) => {
-    const [activeChat, setActiveChar] = useRecoilState(activeChatState);
+    const [activeChat, setActiveChat] = useRecoilState(activeChatState);
     const openHandler = (e: any) => {
         props.setSideBarOpen(true)
     }

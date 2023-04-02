@@ -40,7 +40,7 @@ export const Search = () => {
     }, [searchString])
 
     const chatSelect = (_id: number, title: string, description: string) => {
-        enterRoom(_id, socket);
+        enterRoom(_id, socket, title);
         setActiveChat({ ...activeChat, id: _id, name: title, description: description })
     }
 

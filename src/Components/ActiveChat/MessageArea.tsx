@@ -14,6 +14,8 @@ export const MessageArea = (props: any) => {
     const endChatRef = useRef<HTMLDivElement | null>(null);
     const [page, setPage] = useState(1);
 
+    console.log(activeChat.messages);
+    
     useEffect(() => {//last or saved(may be)
         endChatRef?.current?.lastElementChild?.scrollIntoView({ behavior: "smooth" });
     }, [activeChat.messages.length])
@@ -42,11 +44,11 @@ export const MessageArea = (props: any) => {
                             {activeChat.messages?.map((message: any) => {
                                 if (user.username == message.user.username) {
                                     return (
-                                        <Message text={message.text} key={message.id} location='end' />
+                                        <Message text={message.text}  name={message.user.username} key={message.id} location='end' />
                                     )
                                 } else {
                                     return (
-                                        <Message text={message.text} key={message.id} location='start' />
+                                        <Message text={message.text} name={message.user.username} key={message.id} location='start' />
                                     )
                                 }
                             }

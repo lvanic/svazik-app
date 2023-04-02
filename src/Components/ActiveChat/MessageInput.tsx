@@ -9,7 +9,7 @@ import { userState } from "../../Atoms/UserState";
 import { IMessage } from "../../Interfaces/IMessage";
 import { ValidateMessage } from "../../Utils/ValidateMessage";
 
-//a component that sends an addMessage request with a text over a web socket
+
 export const MessageInput = (props: any) => {
     const [activeChat, setActiveChat] = useRecoilState(activeChatState)
     const [message, setMessage] = useState('');
@@ -17,7 +17,7 @@ export const MessageInput = (props: any) => {
     const inputRef = useRef<any>(null)
     useEffect(() => {
         console.log(inputRef.current);
-        
+
         inputRef.current.focus();
     }, [])
     const MessageSend = (e: any) => {
@@ -25,7 +25,8 @@ export const MessageInput = (props: any) => {
             socket.emit('addMessage', {
                 text: message,
                 room: {
-                    id: activeChat.id
+                    id: activeChat.id,
+                    name: activeChat.name
                 }
             });
             setMessage('')
@@ -36,7 +37,8 @@ export const MessageInput = (props: any) => {
             socket.emit('addMessageSecure', {
                 text: message,
                 room: {
-                    id: activeChat.id
+                    id: activeChat.id,
+                    name: activeChat.name
                 }
             });
             setMessage('')

@@ -17,8 +17,8 @@ export async function joinRoom(id: number, socket: Socket, _page: Number) {
     socket.emit('joinRoom', { id: id });
 }
 
-export async function enterRoom(id: number, socket: Socket) {
-    socket.emit('enterRoom', { id: id });
+export async function enterRoom(id: number, socket: Socket, title: string) {
+    socket.emit('enterRoom', { id: id, name: title });
 }
 
 export async function searchRooms(socket: Socket, name: string) {

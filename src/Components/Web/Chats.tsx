@@ -45,6 +45,7 @@ export const Chats = (props: any) => {
             handleClose()
         }
     }
+     
     return (
         <>
             <Nav onScroll={handleScroll} className="d-flex flex-row mh-100 is-nav-open" id="side-bar-handler" ref={navRef} style={{ height: '100vh' }}>
