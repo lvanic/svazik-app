@@ -5,7 +5,6 @@ import Nav from 'react-bootstrap/Nav';
 
 export const FootBar = () => {
     return (
-
         <Nav className="justify-content-center navbar navbar-fixed-bottom" fill variant="tabs">
             <Nav.Item>
                 <Nav.Item>

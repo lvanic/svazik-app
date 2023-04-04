@@ -23,6 +23,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
+    "react-slideshow-image": "^4.2.1",
+    "react-toastify": "^9.1.2",
     "recoil": "^0.7.7",
     "simple-peer": "^9.9.3",
     "socket.io": "^4.6.1",
