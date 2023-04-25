@@ -1,208 +1,148 @@
-import { useReducer, useState, useRef, useEffect, useLayoutEffect } from "react"
+import { useReducer, useState, useRef, useEffect, useLayoutEffect, createRef } from "react"
 import { Card } from "react-bootstrap";
 import Button from "react-bootstrap/esm/Button";
 import { useRecoilState } from "recoil";
 import io from 'socket.io-client';
 import { socketState } from "../Atoms/SocketState";
-import Peer from "simple-peer";
-import { activeChatState } from "../Atoms/ActiveChat";
+import Peer from 'peerjs';
 
 export const VideoCall = (props: any) => {
-    const [socket, setSocket] = useRecoilState(socketState);
-    const [activeChat, setActiveChat] = useRecoilState(activeChatState)
-
-    const [stream, setStream] = useState<any>(null)
-    const [userStream, setUserStream] = useState<any>([])
-
-    const [callAccepted, setCallAccepted] = useState(false)
-    const [callEnded, setCallEnded] = useState(false)
-
-    const [mySignal, setMySignal] = useState<any>(null)
-    const [callerSignal, setCallerSignal] = useState<any>(props.callerSignal)
-
+    const [peer, setPeer] = useState<any>(null);
+    const [myStream, setMyStream] = useState<any>(null);
+    const [peers, setPeers] = useState<any>({});
+    const [peerId, setPeerId] = useState('');
+    const [audioEnabled, setAudioEnabled] = useState(true);
+    const [videoEnabled, setVideoEnabled] = useState(true);
+    const usersVideos = useRef<any>([])
     const myVideo = useRef<any>()
-    const userVideo = useRef<any>([])
-
-    const connectionRef = useRef<any>()
-
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream: any) => {
-            setStream(stream)
-        })
-        if (callerSignal == undefined) {
-            socket.emit('getCallerSignal', { room: { id: activeChat.id } })
+        var peerId = prompt('Это отладка, введите peerId который вам сообщили')
+        if (peerId != 'prp' && peerId != null) {
+            setPeerId(peerId)
         }
-
     }, [])
 
     useEffect(() => {
-        console.log(props.callerSignal);
-        console.log(callerSignal);
-    }, [props.callerSignal])
+        myVideo.current.srcObject = myStream;
+    }, [myStream])
 
     useEffect(() => {
-        socket.on('getCallerSignal', (data: any) => {
-            if (mySignal != null) {
-                console.log(mySignal);
-                socket.emit('callRequest', {
-                    signal: mySignal,
-                    room: { id: activeChat.id },
-                })
-            }
+        Object.keys(peers).map((peerId: any) => {
+            usersVideos.current[peerId].srcObject = peers[peerId]
         })
-    }, [mySignal])
+    }, [peers])
 
     useEffect(() => {
-        if (myVideo.current != undefined) {
-            myVideo.current.srcObject = stream
+        // Получение медиапотока
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+            .then((stream) => {
+                setMyStream(stream);
+            })
+            .catch((error) => {
+                console.error('Error accessing media devices', error);
+            });
+
+        // Инициализация PeerJS
+        const peerHandler = new Peer()
+
+        setPeer(peerHandler);
+        // Обработчики событий PeerJS
+        peerHandler.on('open', (id: any) => {
+            alert(`Peer ID: ${id}`)
+            console.log(`Peer ID: ${id}`);
+        });
+
+        peerHandler.on('call', (call: any) => {
+            // Получение вызова и отправка своего потока
+            call.answer(myStream);
+            // Добавление потока от нового участника в список участников
+            call.on('stream', (remoteStream: any) => {
+                setPeers((prevState: any) => {
+                    return { ...prevState, [call.peer]: remoteStream };
+                });
+            });
+        });
+
+        // Отключение потока участника, если он ушел из комнаты
+        peerHandler.on('close', () => {
+            console.log('Peer connection closed');
+        });
+
+        return () => {
+            peerHandler.disconnect();
+        };
+    }, []);
+
+    const startCall = () => {
+        const call = peer.call(peerId, myStream);
+        // Добавление потока от нового участника в список участников
+        call.on('stream', (remoteStream: any) => {
+            setPeers((prevState: any) => {
+                return { ...prevState, [call.peer]: remoteStream };
+            });
+        });
+    };
+
+    const joinCall = () => {
+        const call = peer.call(peerId, myStream);
+        // Добавление потока от нового участника в список участников
+        call.on('stream', (remoteStream: any) => {
+            setPeers((prevState: any) => {
+                return { ...prevState, [call.peer]: remoteStream };
+            });
+        });
+    };
+
+    const endCall = () => {
+        // Отключение потока от других участников
+        for (const peerId in peers) {
+            peers[peerId].getTracks().forEach((track: any) => track.stop());
         }
-    }, [stream])
 
-    useEffect(() => {
-        if (userVideo.current != undefined) {
-            userVideo.current.srcObject = userStream
-        }
-        console.log(userStream);
-    }, [userStream])
+        // Отключение собственного потока
+        myStream.getTracks().forEach((track: any) => track.stop());
+        setPeers({});
+        setMyStream(null);
+    };
 
-    const callRoom = () => {
-        const peer = new Peer({
-            initiator: true,
-            trickle: false,
-            stream: stream
-        })
+    const toggleAudio = () => {
+        const enabled = !audioEnabled;
+        setAudioEnabled(enabled);
+        myStream.getAudioTracks()[0].setEnabled(enabled);
+    };
 
-        peer.on("signal", (data: any) => {
-            setMySignal(data)
-            socket.emit("callRequest", {
-                room: {
-                    id: activeChat.id,
-                    name: activeChat.name
-                },
-                signalData: mySignal
-            })
-        })
-
-        peer.on("stream", (stream) => {
-            setUserStream(stream)
-        })
-
-        socket.on("callAccepted", (signal) => {//+            
-            setCallAccepted(true)
-            peer.signal(signal.signal)
-        })
-
-        socket.on("connectToCall", (signal) => {           
-            setCallAccepted(true)
-            peer.signal(signal.signal)
-        })
-
-        connectionRef.current = peer
-    }
-
-    const answerCall = (e: any) => {
-        setCallAccepted(true)
-        const peer = new Peer({
-            initiator: false,
-            trickle: false,
-            stream: stream
-        })
-
-        peer.on("signal", (data) => {
-            setMySignal(data)
-            socket.emit("answerCall", {
-                signal: mySignal,
-                room: { id: activeChat.id },
-            })
-        })
-
-        peer.on("stream", (stream) => {//+
-            setUserStream(stream)
-        })
-
-        socket.on("connectToCall", (signal) => {           
-            setCallAccepted(true)
-            peer.signal(signal.signal)
-        })
-
-        peer.signal(callerSignal)
-        connectionRef.current = peer
-    }
-
-    const connectRoom = () => {
-        const peer = new Peer({
-            initiator: false,
-            trickle: false,
-            stream: stream
-        })
-
-        peer.on("signal", (data) => {
-            socket.emit("connectToCall", {
-                signal: data,
-                room: { id: activeChat.id },
-            })
-        })
-
-        peer.on("stream", (stream) => {//+
-            setUserStream(stream)
-        })
-        
-        if (callerSignal != undefined)
-            peer.signal(callerSignal)
-        connectionRef.current = peer
-    }
-
-    const leaveCall = () => {
-        setCallEnded(true)
-        connectionRef.current.destroy()
-    }
+    const toggleVideo = () => {
+        const enabled = !videoEnabled;
+        setVideoEnabled(enabled);
+        myStream.getVideoTracks()[0].setEnabled(enabled);
+    };
 
     return (
-        <div className="position-absolute" style={{ background: 'gray', width: '100%', top: '20%' }}>
-            <div className="container">
-                <div className="video-container">
-                    <div className="video">
-                        {stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "301px" }} />}
-                    </div>
-                    <div className="video">
-                        {callAccepted && !callEnded ?
-                            <video playsInline ref={userVideo} autoPlay style={{ width: "301px" }} /> :
-                            null}
-                    </div>
-                </div>
-                <div className="myId">
-
-                    <div className="call-button">
-                        {callAccepted && !callEnded ? (
-                            <Button variant="contained" color="secondary" onClick={leaveCall}>
-                                End Call
-                            </Button>
-                        ) : props.isConnectToCall ? (
-                            <div >
-                                <Button color="primary" aria-label="call" onClick={connectRoom}>
-                                    Connect
-                                </Button>
-                            </div>
-                        ) : (
-                            <Button color="primary" aria-label="call" onClick={callRoom}>
-                                Call
-                            </Button>
-                        )}
-                    </div>
-                </div>
-                <div>
-                    {callerSignal != undefined && !callAccepted ? (
-                        <div className="caller">
-                            <h1 >Звонок</h1>
-                            <Button variant="contained" color="primary" onClick={answerCall}>
-                                Answer
-                            </Button>
-                        </div>
-                    ) : null}
-                </div>
+        <div style={{ backgroundColor: 'black', position: 'absolute', top: '0px', left: '0px' }}>
+            <h1>Room {peerId}</h1>
+            <div>
+                <button onClick={startCall}>Start Call</button>
+                <button onClick={joinCall}>Join Call</button>
+                <button onClick={endCall}>End Call</button>
             </div>
-        </div >
-    )
-
-} 
+            <div>
+                <button onClick={toggleAudio}>
+                    {audioEnabled ? 'Disable Audio' : 'Enable Audio'}
+                </button>
+                <button onClick={toggleVideo}>
+                    {videoEnabled ? 'Disable Video' : 'Enable Video'}
+                </button>
+            </div>
+            <div>
+                <video ref={myVideo} src={myStream} muted autoPlay />
+                {/* Вывод потоков от других участников */}
+                {Object.keys(peers).map((peerId: any) => {
+                    return (
+                        <video key={peerId} ref={el => usersVideos.current[peerId] = el} src={peers[peerId]} autoPlay />
+                    );
+                })}
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,35 @@
+/* Хедер */
+html[data-theme="light"] .modal-settings-header {
+
+}
+
+html[data-theme="dark"] .modal-settings-header {
+    background-color: rgb(0, 0, 0);
+    color: white!important
+}
+/* Хедер */
+
+/* Боди */
+html[data-theme="light"] .modal-settings-body{
+
+}
+
+html[data-theme="dark"] .modal-settings-body{
+    background-color: rgb(20, 20, 20);
+    color: white!important
+}
+/* Боди */
+
+/* Футер */
+html[data-theme="light"] .modal-settings-footer {
+    display: flex;
+    justify-content: space-around;
+}
+
+html[data-theme="dark"] .modal-settings-footer {
+    display: flex;
+    justify-content: space-around;
+    background-color: rgb(0, 0, 0);
+    color: white!important
+}
+/* Футер */

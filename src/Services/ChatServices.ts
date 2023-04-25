@@ -4,7 +4,8 @@ import { requests } from "../requests";
 export function getChatsForUser(socket: Socket, _page: Number) {
     let page = {
         page: _page,
-        limit: 20
+        limit: 20,
+        paginationType: "take"
     }
     socket.emit('paginateRooms', page)
 }

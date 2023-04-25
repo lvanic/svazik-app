@@ -5,8 +5,10 @@ import { activeChatState } from "../../Atoms/ActiveChat"
 import { socketState } from "../../Atoms/SocketState"
 import { ChatModel } from "../../models/ChatModel"
 import { enterRoom, searchRooms } from "../../Services/ChatServices"
+import { languageState } from "../../Atoms/LanguageState"
 
 export const Search = () => {
+    const [language, setLanguage] = useRecoilState(languageState)
     const [searchList, setSearchList] = useState<ChatModel[]>()
     const [searchString, setSearchString] = useState<string>('');
     const [isDropdown, setIsDropdown] = useState<boolean>(false)
@@ -47,12 +49,13 @@ export const Search = () => {
     const ChangeSearchString = (e: any) => {
         setSearchString(e.target.value);
     }
+
     return (
         <div onClick={ActivateDropdown}>
             <Form.Control
                 type="search"
-                placeholder="Search"
-                className="me-2 pr-0 rounded"
+                placeholder={language.words?.Search}
+                className="me-2 pr-0 rounded search-color-change"
                 aria-label="Search"
                 onChange={ChangeSearchString}
                 value={searchString}
@@ -77,7 +80,7 @@ export const Search = () => {
                                     {element.description}
                                 </Card.Body>
                                 <Card.Text className='border-0'>
-                                    {/* {element.users} */}
+
                                 </Card.Text>
                             </Card>
                         </Dropdown.Item>

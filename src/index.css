@@ -26,3 +26,11 @@ code {
   border-radius: 10px;
   background-color: #f9f9fd;
 }
+
+html[data-theme="light"] .btn-close{
+
+}
+
+html[data-theme="dark"] .btn-close{
+    background-color: rgb(255, 255, 255);
+}

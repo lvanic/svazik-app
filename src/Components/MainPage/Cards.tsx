@@ -18,13 +18,11 @@ export const Cards = () => {
                 setSlidesToShow(3)
     }, [])
     return (
-        // <Row xs={1} md={3} className="g-4 border-0  ">
         <div className="slide-container">
             <Slide slidesToScroll={1} slidesToShow={slidesToShow} indicators={true} cssClass='slide'>
                 {cards.map((card, index) => (
                     <Col className='h-100' key={index} onClick={() => card.link != undefined ? window.open(card.link) : null}>
                         <Card className="p-3 h-100">
-                            {/* <Card.Img variant="top" src="https://secure.skypeassets.com/content/dam/scom/grd/web_skype_image_big_screens_optimized.png" /> */}
                             <Card.Img variant='top' src={card.img} />
                             <Card.Body >
                                 <Card.Title>{card.title}</Card.Title>
@@ -38,6 +36,5 @@ export const Cards = () => {
                 )}
             </Slide>
         </div>
-        // </Row>
     );
 }

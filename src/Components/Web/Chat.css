@@ -3,6 +3,23 @@
     cursor: pointer;
 }
 
+
+html[data-theme="light"] .chat-item{
+
+}
+
+html[data-theme="dark"] .chat-item{
+    background-color: black;
+}
+
+html[data-theme="light"] .text-color-change{
+
+}
+
+html[data-theme="dark"] .text-color-change{
+    color: white!important;
+}
+
 .search-dropdown-item {
     background-color: #f8f9fa00;
 }
@@ -11,7 +28,9 @@
     background-color: #f8f9fa00;
 }
 
-.search-dropdown-card {}
+.search-dropdown-card {
+    
+}
 
 .search-dropdown-card:hover {
     background-color: #c7c7c7

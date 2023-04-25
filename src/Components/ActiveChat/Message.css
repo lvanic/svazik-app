@@ -36,3 +36,29 @@
     padding-right: 10%;
     padding-left: 10%;
 }
+
+.selected-message{
+    background-color: rgba(49, 48, 48, 0.473);
+}
+
+.context-message{
+    transition: all 0.3s ease;
+    /* height: 80px; */
+    /* width: 300px; */
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    width: 200px;
+    /* height: 120px; */
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+.context-menu-item{
+    height: 40px;
+}
+.context-menu-item:hover{
+    background-color: #a5a5a5;
+}

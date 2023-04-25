@@ -1,4 +1,4 @@
-.chat-place-holder {
+html[data-theme="light"] .chat-place-holder {
     background-image:
         linear-gradient(to bottom,
             rgba(0, 94, 255, 0.5),
@@ -12,6 +12,15 @@
 .chat-place-holder::-webkit-scrollbar {
     width: 7px;
     visibility: hidden;
+}
+
+html[data-theme="dark"] .chat-place-holder {
+    background-color: #3b3b3b;
+    background-image: none;
+    background-size: 400px;
+    width: 100%;
+    height: 100vh;
+    overflow-y: hidden;
 }
 
 .chat-place-holder::-webkit-scrollbar-thumb {

@@ -49,10 +49,9 @@ export const Web = () => {
     useEffect(() => {
         if (user.isAuthorized) {
             socket.on('rooms', data => {
-                console.log(data);
+                // console.log(data)
                 setRooms(data)
             })
-            // if (page != 0)
             getChatsForUser(socket, page);
         }
         return (() => {
@@ -65,7 +64,13 @@ export const Web = () => {
             socket.on('messages', data => {
                 let messages: MessageModel[] = [...data.messages.items];
                 messages.reverse()
-                setActiveChat({ ...activeChat, messages: messages, isCall: data.room.isCall })
+                setActiveChat({
+                    ...activeChat,
+                    messages: messages,
+                    isCall: data.room.isCall,
+                    admins: data.room.admins,
+                    users: data.room.users
+                })
             })
 
             if (prevActiveChatId != -1) {
@@ -95,7 +100,6 @@ export const Web = () => {
         })
 
         socket.on('messagePaginated', data => {
-            console.log(data);
             let messages: MessageModel[] = [...data.items];
             messages.reverse()
             setActiveChat({ ...activeChat, messages: messages.concat(activeChat.messages) })

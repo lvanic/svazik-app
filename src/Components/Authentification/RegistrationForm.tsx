@@ -6,20 +6,24 @@ import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
 import { UserModel } from '../../models/UserModel';
 import { RegistrationService } from '../../Services/AuthentificationService';
+import { getError } from '../../Services/GetError';
+import { useRecoilState } from 'recoil';
+import { languageState } from '../../Atoms/LanguageState';
 
 export const RegistrationForm = (props: any) => {
-
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
     const [canRegister, setCanRegister] = useState(false);
+    const [language, setLanguage] = useRecoilState(languageState)
+
     useEffect(() => {
         if (password.trim() != '' && username.trim() != '' && email.trim() != '') {
             setCanRegister(true)
         }
-        else{
+        else {
             setCanRegister(false)
         }
     }, [password, username, email])
@@ -28,7 +32,7 @@ export const RegistrationForm = (props: any) => {
         if (confirmPassword != password) {
             setAlertMessage('Пароли не совпадают')
         }
-        else{
+        else {
             setAlertMessage('')
         }
     }, [confirmPassword, password])
@@ -39,13 +43,14 @@ export const RegistrationForm = (props: any) => {
                 props.setIsAuthorization(true)
             }
             else {
-                setAlertMessage('Пользователь не зарегистрирован')
+                setAlertMessage(getError.registerNotSuscess)
             }
         }
         else {
-            setAlertMessage('Заполните все поля')
+            setAlertMessage(getError.applyAllFields)
         }
     }
+
     const passwordChange = (e: any) => {
         setPassword(e.target.value)
     }
@@ -63,31 +68,31 @@ export const RegistrationForm = (props: any) => {
     }
     return (
         <Nav className='justify-content-center'>
-            <Form className='w-25 p-3' >
+            <Form className='' >
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Enter username" onChange={usernameChange} />
+                    <Form.Label>{language.words?.Username}</Form.Label>
+                    <Form.Control type="text" placeholder={language.words?.EnterUsername} onChange={usernameChange} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
                     <Form.Control type="email" placeholder="Enter email" onChange={emailChange} />
                     <Form.Text className="text-muted">
-                        Почта будет использоваться для входа в ваш аккаунт
+                        {language.words?.EmailWillUse}
                     </Form.Text>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" onChange={passwordChange} />
+                    <Form.Label>{language.words?.Password}</Form.Label>
+                    <Form.Control type="password" placeholder={language.words?.EnterPassword} onChange={passwordChange} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" onChange={confirmPasswordChange} />
+                    <Form.Label>{language.words?.RepeatPassword}</Form.Label>
+                    <Form.Control type="password" placeholder={language.words?.EnterPassword} onChange={confirmPasswordChange} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check onClick={selectNewsUpdate} type="checkbox" label="Подписаться на обновления" />
+                    <Form.Check onClick={selectNewsUpdate} type="checkbox" label={language.words?.SubscribeUpdates} />
                 </Form.Group>
                 {
                     alertMessage == '' ?
@@ -98,10 +103,10 @@ export const RegistrationForm = (props: any) => {
                         </Alert>
                 }
                 <Button variant="primary" type="button" onClick={Register}>
-                    Зарегистрироваться
+                    {language.words?.Register}
                 </Button>
                 <Button variant='link' type="button" onClick={() => props.setIsAuthorization(true)} className='mt-2 ml-3'>
-                    Уже есть аккаунт?
+                    {language.words?.AlreadyAccount}
                 </Button>
             </Form>
         </Nav>
