@@ -4,20 +4,20 @@
 }
 
 
-html[data-theme="light"] .chat-item{
+html[data-theme="light"] .chat-item {}
 
+html[data-theme="dark"] .chat-item {
+    background-color: rgba(0, 0, 0, 0);
 }
 
-html[data-theme="dark"] .chat-item{
-    background-color: black;
+html[data-theme="dark"] .chat-item:hover {
+    background-color: rgba(106, 106, 106, 0.497);
 }
 
-html[data-theme="light"] .text-color-change{
+html[data-theme="light"] .text-color-change {}
 
-}
-
-html[data-theme="dark"] .text-color-change{
-    color: white!important;
+html[data-theme="dark"] .text-color-change {
+    color: rgb(232, 232, 232) !important;
 }
 
 .search-dropdown-item {
@@ -28,9 +28,7 @@ html[data-theme="dark"] .text-color-change{
     background-color: #f8f9fa00;
 }
 
-.search-dropdown-card {
-    
-}
+.search-dropdown-card {}
 
 .search-dropdown-card:hover {
     background-color: #c7c7c7

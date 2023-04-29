@@ -62,12 +62,14 @@ export const Web = () => {
     useEffect(() => {
         if (activeChat.id != -1) {
             socket.on('messages', data => {
+                console.log(data);
+                
                 let messages: MessageModel[] = [...data.messages.items];
                 messages.reverse()
                 setActiveChat({
                     ...activeChat,
                     messages: messages,
-                    isCall: data.room.isCall,
+                    call: data.callRoom,
                     admins: data.room.admins,
                     users: data.room.users
                 })
@@ -91,12 +93,27 @@ export const Web = () => {
     useEffect(() => {
         socket.on('messageAdded', message => {
             if (message.room.id == activeChat.id) {
-                let messageHandler = new MessageModel(message.text, message.user, message.created_at);
+                let messageHandler = new MessageModel(message.id, message.text, message.user, message.created_at);
                 setActiveChat({ ...activeChat, messages: [...activeChat.messages, messageHandler] })
             }
-            else {
-                // setNotifies([...Notifies, { message: message.text, chatId: message.room.id }])
-            }
+        })
+
+        socket.on('messageUpdated', message => {
+
+            setActiveChat({
+                ...activeChat, messages: activeChat.messages.map(x => x.id == message.id
+                    ?
+                    { ...x, text: message.text }
+                    :
+                    x
+                )
+            })
+        })
+
+        socket.on('messageDeleted', message => {
+            setActiveChat({
+                ...activeChat, messages: activeChat.messages.filter(x => x.id != message.id)
+            })
         })
 
         socket.on('messagePaginated', data => {
@@ -108,12 +125,13 @@ export const Web = () => {
         return (() => {
             socket.removeAllListeners("messageAdded");
             socket.removeAllListeners("messagePaginated");
+            socket.removeAllListeners('messageDeleted');
+            socket.removeAllListeners('messageUpdated');
         })
     }, [activeChat.messages])
 
     const setRooms = (data: any) => {
         if (data.meta.itemCount > 0) {
-            //add new chat to chat list to the end of the list
             setChatList([...chatList, ...data.items])
         }
         else {

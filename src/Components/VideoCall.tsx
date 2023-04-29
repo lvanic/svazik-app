@@ -1,40 +1,97 @@
-import { useReducer, useState, useRef, useEffect, useLayoutEffect, createRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card } from "react-bootstrap";
 import Button from "react-bootstrap/esm/Button";
 import { useRecoilState } from "recoil";
 import io from 'socket.io-client';
 import { socketState } from "../Atoms/SocketState";
 import Peer from 'peerjs';
+import { activeChatState } from "../Atoms/ActiveChat";
+import { resolve } from "path";
+import { log } from "console";
 
 export const VideoCall = (props: any) => {
+    const [socket, setSocket] = useRecoilState(socketState)
+    const [activeChat, setActiveChat] = useRecoilState(activeChatState)
     const [peer, setPeer] = useState<any>(null);
     const [myStream, setMyStream] = useState<any>(null);
-    const [peers, setPeers] = useState<any>({});
-    const [peerId, setPeerId] = useState('');
-    const [audioEnabled, setAudioEnabled] = useState(true);
-    const [videoEnabled, setVideoEnabled] = useState(true);
-    const usersVideos = useRef<any>([])
-    const myVideo = useRef<any>()
+    const [peers, setPeers] = useState<{ [id: string]: MediaStream }>({});
+    const [myPeerId, setMyPeerId] = useState<string>('');
+    const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+    const [videoEnabled, setVideoEnabled] = useState<boolean>(true);
+    const usersVideos = useRef<(HTMLVideoElement | null)[]>([]);
+    const myVideo = useRef<HTMLVideoElement | null>(null);
 
     useEffect(() => {
-        var peerId = prompt('Это отладка, введите peerId который вам сообщили')
-        if (peerId != 'prp' && peerId != null) {
-            setPeerId(peerId)
+        if (myVideo.current && myStream) {
+            myVideo.current.srcObject = myStream;
         }
-    }, [])
-
-    useEffect(() => {
-        myVideo.current.srcObject = myStream;
     }, [myStream])
 
     useEffect(() => {
-        Object.keys(peers).map((peerId: any) => {
-            usersVideos.current[peerId].srcObject = peers[peerId]
+        Object.keys(peers).forEach((peerId: any) => {
+            if (usersVideos.current[peerId]) {
+                usersVideos.current[peerId]!.srcObject = peers[peerId]
+            }
         })
     }, [peers])
 
+    const initializePeer = async () => {
+        var options = {
+            config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] },
+            stream: true
+        }
+        const peerHandler = new Peer(options)
+
+        setPeer(peerHandler);
+
+        peerHandler.on('open', (id) => {
+            setMyPeerId(id)
+            socket.emit('callRequest', {
+                peerId: id,
+                room: activeChat
+            })
+
+            if (props.callerPeersId) {
+                props.callerPeersId.map((peerId: string) => {
+                    const call = peerHandler.call(peerId, myStream);
+                    call.on('stream', (remoteStream: any) => {
+                        setPeers((prevState) => {
+                            return { ...prevState, [call.peer]: remoteStream };
+                        });
+                    });
+                })
+            } else {
+                const call = peerHandler.call(myPeerId, myStream);
+                call.on('stream', (remoteStream: any) => {
+                    setPeers((prevState) => {
+                        return { ...prevState, [call.peer]: remoteStream };
+                    });
+                });
+            }
+            setAudioEnabled(true);
+            setVideoEnabled(true);
+        });
+
+        peerHandler.on('call', (call: any) => {
+            console.log(myStream);
+            call.answer(myStream);
+            call.on('stream', (remoteStream: any) => {
+                setPeers((prevState) => {
+                    return { ...prevState, [call.peer]: remoteStream };
+                });
+            });
+        });
+
+        peerHandler.on('close', () => {
+            console.log('Peer connection closed');
+        });
+
+        return () => {
+            peerHandler.disconnect();
+        };
+    };
+
     useEffect(() => {
-        // Получение медиапотока
         navigator.mediaDevices.getUserMedia({ audio: true, video: true })
             .then((stream) => {
                 setMyStream(stream);
@@ -43,106 +100,93 @@ export const VideoCall = (props: any) => {
                 console.error('Error accessing media devices', error);
             });
 
-        // Инициализация PeerJS
-        const peerHandler = new Peer()
-
-        setPeer(peerHandler);
-        // Обработчики событий PeerJS
-        peerHandler.on('open', (id: any) => {
-            alert(`Peer ID: ${id}`)
-            console.log(`Peer ID: ${id}`);
-        });
-
-        peerHandler.on('call', (call: any) => {
-            // Получение вызова и отправка своего потока
-            call.answer(myStream);
-            // Добавление потока от нового участника в список участников
-            call.on('stream', (remoteStream: any) => {
-                setPeers((prevState: any) => {
-                    return { ...prevState, [call.peer]: remoteStream };
-                });
-            });
-        });
-
-        // Отключение потока участника, если он ушел из комнаты
-        peerHandler.on('close', () => {
-            console.log('Peer connection closed');
-        });
-
         return () => {
-            peerHandler.disconnect();
-        };
+            socket.emit('disconectCall')
+        }
     }, []);
 
-    const startCall = () => {
-        const call = peer.call(peerId, myStream);
-        // Добавление потока от нового участника в список участников
-        call.on('stream', (remoteStream: any) => {
-            setPeers((prevState: any) => {
-                return { ...prevState, [call.peer]: remoteStream };
-            });
-        });
-    };
-
-    const joinCall = () => {
-        const call = peer.call(peerId, myStream);
-        // Добавление потока от нового участника в список участников
-        call.on('stream', (remoteStream: any) => {
-            setPeers((prevState: any) => {
-                return { ...prevState, [call.peer]: remoteStream };
-            });
-        });
-    };
-
-    const endCall = () => {
-        // Отключение потока от других участников
-        for (const peerId in peers) {
-            peers[peerId].getTracks().forEach((track: any) => track.stop());
+    useEffect(() => {
+        return () => {
+            if (myStream) {
+                myStream.getTracks().forEach((track: any) => {
+                    track.stop();
+                });
+            }
         }
+    }, [myStream])
 
-        // Отключение собственного потока
-        myStream.getTracks().forEach((track: any) => track.stop());
-        setPeers({});
-        setMyStream(null);
+    const callPeer = async () => {
+        if (!peer) {
+            await initializePeer();
+        }
     };
 
-    const toggleAudio = () => {
-        const enabled = !audioEnabled;
-        setAudioEnabled(enabled);
-        myStream.getAudioTracks()[0].setEnabled(enabled);
+    const handleAudioClick = () => {
+        if (myStream) {
+            myStream.getAudioTracks().forEach((track: any) => {
+                track.enabled = !audioEnabled;
+                setAudioEnabled((prevState) => !prevState);
+            });
+        }
     };
 
-    const toggleVideo = () => {
-        const enabled = !videoEnabled;
-        setVideoEnabled(enabled);
-        myStream.getVideoTracks()[0].setEnabled(enabled);
+    const handleVideoClick = () => {
+        if (myStream) {
+            myStream.getVideoTracks().forEach((track: any) => {
+                track.enabled = !videoEnabled;
+                setVideoEnabled((prevState) => !prevState);
+                if (myVideo.current) {
+                    myVideo.current.srcObject = null;
+                    myVideo.current.srcObject = myStream;
+                }
+            })
+        }
     };
 
     return (
-        <div style={{ backgroundColor: 'black', position: 'absolute', top: '0px', left: '0px' }}>
-            <h1>Room {peerId}</h1>
-            <div>
-                <button onClick={startCall}>Start Call</button>
-                <button onClick={joinCall}>Join Call</button>
-                <button onClick={endCall}>End Call</button>
-            </div>
-            <div>
-                <button onClick={toggleAudio}>
-                    {audioEnabled ? 'Disable Audio' : 'Enable Audio'}
-                </button>
-                <button onClick={toggleVideo}>
-                    {videoEnabled ? 'Disable Video' : 'Enable Video'}
-                </button>
-            </div>
-            <div>
-                <video ref={myVideo} src={myStream} muted autoPlay />
-                {/* Вывод потоков от других участников */}
-                {Object.keys(peers).map((peerId: any) => {
-                    return (
-                        <video key={peerId} ref={el => usersVideos.current[peerId] = el} src={peers[peerId]} autoPlay />
-                    );
-                })}
+        <div className="container-fluid" style={{ position: 'absolute', top: '20px' }}>
+            <div className="row">
+                <div className="col-lg-9">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <Card>
+                                <Card.Body>
+                                    <video
+                                        ref={myVideo}
+                                        muted
+                                        autoPlay
+                                        style={{ width: "100%", height: "auto" }}
+                                    />
+                                    <Button variant="primary" onClick={() => callPeer()}>{props.receivingCall ? 'Answer' : props.isConnectToCall ? 'Conect' : 'Call'}</Button>
+                                    <Button variant="danger" onClick={() => handleAudioClick()}>
+                                        {audioEnabled ? 'Mute' : 'Unmute'}
+                                    </Button>
+                                    <Button variant="warning" onClick={() => handleVideoClick()}>
+                                        {videoEnabled ? 'Disable Video' : 'Enable Video'}
+                                    </Button>
+
+                                    <Button variant="danger" onClick={() => props.setIsModalOpen(false)}>
+                                        {props.receivingCall ? 'Reject' : 'Close'}
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                        {Object.keys(peers).map((peerId: any, index) => (
+                            <div key={index} className="col-md-6">
+                                <Card>
+                                    <Card.Body>
+                                        <video
+                                            ref={(videoEl) => (usersVideos.current[peerId] = videoEl)}
+                                            autoPlay
+                                            style={{ width: "100%", height: "auto" }}
+                                        />
+                                    </Card.Body>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
-}
+};

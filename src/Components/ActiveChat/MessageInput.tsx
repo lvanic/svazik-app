@@ -28,10 +28,12 @@ export const MessageInput = (props: any) => {
             if (inputHandler.isUpdate) {
 
                 socket.emit('updateMessage', {
-                    text: inputHandler.message,
-                    idMessage: inputHandler.idUpdateMessage
+                    message: {
+                        text: inputHandler.message,
+                        id: inputHandler.idUpdateMessage
+                    }
                 });
-
+                console.log('Update message');
             } else {
                 socket.emit('addMessage', {
                     text: inputHandler.message,

@@ -12,7 +12,7 @@ export const OpenSvazik = () => {
             <Card.Body className="border-0">
                 <Card.Text className='text-left my-4'>
                     <h1>
-                        <b style={{width:'360px', display:'block'}}>
+                        <b style={{maxWidth:'360px', display:'block'}}>
                             {language.words?.Tagline} <span className='gradientSvazik'> Sviazik </span>
                         </b>
                     </h1>

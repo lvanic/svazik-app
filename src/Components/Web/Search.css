@@ -1,0 +1,8 @@
+html[data-theme="dark"] .drop-down-chats-back {
+    background-color: rgb(58, 58, 58);
+}
+
+html[data-theme="dark"] .search-dropdown-card {
+    background-color: rgba(255, 255, 255, 0.307);
+}
+

@@ -23,12 +23,12 @@ export const UsernameUpdate = (props: any) => {
     return (
         <div>
             <div>
-                <Form.Label>{language.words?.Username}: </Form.Label>
+                <Form.Text>{language.words?.Username}: </Form.Text>
                 {
                     isUpdate ?
                         <Form.Control value={username} onChange={onUsernameChange} />
                         :
-                        <Form.Text> {username}</Form.Text>
+                        <Form.Text style={{color:'white'}}> {username}</Form.Text>
                 }
             </div>
             <Button className="ps-1 pe-1" onClick={usernameUpdate} >{language.words?.Edit}</Button>

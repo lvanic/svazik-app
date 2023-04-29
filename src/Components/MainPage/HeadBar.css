@@ -1,0 +1,12 @@
+.sviazik-logo {}
+
+.sviazik-logo:hover .sviazik-logo-name {
+    transition: all .3s;
+    width: 51px;
+}
+
+.sviazik-logo-name {
+    transition: all .3s;
+    overflow: hidden;
+    width: 0px;
+}

@@ -75,7 +75,6 @@ function App() {
             <>
               <HeadBar />
               <MainPage />
-              <FootBar />
             </>
           }
         />

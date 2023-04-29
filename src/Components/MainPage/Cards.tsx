@@ -6,7 +6,10 @@ import { cards } from '../../data/cards';
 import { Slide } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css'
 import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { languageState } from '../../Atoms/LanguageState';
 export const Cards = () => {
+    const [language, setLanguage] = useRecoilState(languageState)
     const [slidesToShow, setSlidesToShow] = useState(1)
     useEffect(() => {
         window.innerWidth < 400 ?
@@ -25,9 +28,9 @@ export const Cards = () => {
                         <Card className="p-3 h-100">
                             <Card.Img variant='top' src={card.img} />
                             <Card.Body >
-                                <Card.Title>{card.title}</Card.Title>
+                                <Card.Title>{language.words?.CardInfo[index].name}</Card.Title>
                                 <Card.Text>
-                                    {card.description}
+                                    {language.words?.CardInfo[index].description}
                                 </Card.Text>
                             </Card.Body>
                         </Card>

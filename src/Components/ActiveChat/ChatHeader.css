@@ -1,5 +1,23 @@
-#chat-header{
+html[data-theme="light"] #chat-header{
     position: sticky;
     top: 0px;
     z-index: 5;
+}
+
+html[data-theme="dark"] #chat-header{
+    position: sticky;
+    top: 0px;
+    z-index: 5;
+    border-color: black!important;
+    background-color: rgb(24, 24, 24)!important;
+}
+
+html[data-theme="dark"] .text-change-theme{
+    color: white
+}
+
+html[data-theme="dark"] .button-change-theme{
+    background-color: rgba(0, 0, 0, 0);
+    border: none!important;
+    color: white
 }

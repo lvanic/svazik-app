@@ -1,3 +1,5 @@
+import { Socket } from "net";
+
 export const Languages =
     [
         {
@@ -40,7 +42,40 @@ export const Languages =
                 EmailWillUse: 'Почта будет использоваться для входа в ваш аккаунт',
                 ThirdPersons: 'Мы не передаем вашу почту 3 лицам',
                 Delete: 'Удалить',
-                Scream: 'Крик души'//VideoCall
+                Scream: 'Крик души',//VideoCall
+                CardInfo: [
+                    {
+                        id: 0,
+                        name: 'Будь всегда на связи',
+                        description: 'Имей возможность общаться с друзьями из любой точки мира'
+                    },
+                    {
+                        id: 1,
+                        name: 'Сервера никогда не подведут',
+                        description: 'У sviazik есть сервера по всему миру готовые в любой момент обработать твой звонок'
+                    },
+                    {
+                        id: 2,
+                        name: 'Не теряйся нигде',
+                        description: 'Даже находясь в затруднительном положении не забывай позвонить своей собачке'
+                    },
+                    {
+                        id: 3,
+                        name: 'Открой свой внутренний мир',
+                        description: 'Знакомься, общайся, находи новых друзей вместе с нами'
+                    },
+                    {
+                        id: 4,
+                        name: 'Покажи друзьям свои путешествия',
+                        description: 'Даже если друзья далеко, sviazik поможет поделиться красивыми моментами'
+                    },
+                    {
+                        id: 5,
+                        name: 'Поддержи хвостиков и котиков',
+                        description: 'Имей возможность общаться с друзьями из любой точки мира'
+                    },
+
+                ]
             }
         },
         {
@@ -83,7 +118,39 @@ export const Languages =
                 EmailWillUse: 'Email will be used to log into your account',
                 ThirdPersons: 'We do not share your mail with 3 persons',
                 Delete: 'Delete',
-                Scream: 'Cry from the heart'
+                Scream: 'Cry from the heart',
+                CardInfo: [
+                    {
+                        id: 0,
+                        name: 'Stay Connected',
+                        description: 'Be able to communicate with friends from anywhere in the world'
+                    },
+                    {
+                        id: 1,
+                        name: 'Servers never fail',
+                        description: 'Sviazik has servers all over the world ready to process your call at any time'
+                    },
+                    {
+                        id: 2,
+                        name: 'Never get lost',
+                        description: `Even if you find yourself in a difficult situation, don't forget to call your dog`
+                    },
+                    {
+                        id: 3,
+                        name: 'Explore your inner world',
+                        description: 'Meet new people, communicate, and make new friends with us'
+                    },
+                    {
+                        id: 4,
+                        name: 'Show your travels to friends',
+                        description: 'Even if your friends are far away, sviazik will help you share beautiful moments'
+                    },
+                    {
+                        id: 5,
+                        name: 'Support Tails and Cats',
+                        description: 'Be able to communicate with friends from anywhere in the world'
+                    }
+                ]
             }
         },
     ]

@@ -6,6 +6,7 @@ import { socketState } from "../../Atoms/SocketState"
 import { ChatModel } from "../../models/ChatModel"
 import { enterRoom, searchRooms } from "../../Services/ChatServices"
 import { languageState } from "../../Atoms/LanguageState"
+import './Search.css'
 
 export const Search = () => {
     const [language, setLanguage] = useRecoilState(languageState)
@@ -62,7 +63,7 @@ export const Search = () => {
                 onSubmit={() => { }}
             />
             <Dropdown.Menu show={isDropdown}
-                className="mt-2 w-75">
+                className="mt-2 w-75 drop-down-chats-back">
                 {
                     searchList?.map((element, index) =>
                         <Dropdown.Item style={{ overflow: 'hidden' }}

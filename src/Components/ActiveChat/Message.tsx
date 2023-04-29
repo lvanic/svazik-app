@@ -6,12 +6,15 @@ import { activeChatState } from "../../Atoms/ActiveChat";
 import { userState } from "../../Atoms/UserState";
 import { inputState } from "../../Atoms/InputState";
 import { languageState } from "../../Atoms/LanguageState";
+import { socketState } from "../../Atoms/SocketState";
 export const Message = (props: any) => {
     const [position, setPosition] = useState<any>(1);
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
     const [inputHandler, setInputState] = useRecoilState(inputState)
     const [activeChat, setActiveChat] = useRecoilState(activeChatState)
     const [user, setUser] = useRecoilState(userState)
+    const [socket, setSocket] = useRecoilState(socketState)
+
     const messageRef = useRef<HTMLDivElement>(null)
     const [isAdmin, setIsAdmin] = useState(false)
     const [dropDownCoords, setDropDownCoords] = useState({
@@ -19,6 +22,7 @@ export const Message = (props: any) => {
         Y: 0
     });
     const [language, setLanguage] = useRecoilState(languageState)
+
     const onMessageContextClick = (e: any) => {
         e.preventDefault();
         if (props.name == user.username) {
@@ -53,11 +57,13 @@ export const Message = (props: any) => {
     }
 
     const deleteMessage = (id: number) => {
-        //sweatalerts вы точно хотите удалить сообщение
+        socket.emit('deleteMessage', {
+            message:
+                { id: props.id }
+        })
     }
 
     const editMessage = (id: number) => {
-
         setInputState({
             message: props.text,
             isUpdate: true,
@@ -79,8 +85,8 @@ export const Message = (props: any) => {
 
     return (
         //todo custom menu
-        <div>
-            <div onContextMenu={onMessageContextClick} ref={messageRef} key={props.id} className={`message-field d-flex align-items-center justify-content-${props.location}`}>
+        <div key={props.id}>
+            <div onContextMenu={onMessageContextClick} ref={messageRef} className={`message-field d-flex align-items-center justify-content-${props.location}`}>
                 <Card className={`ps-${5 - position} pe-${position} pt-2 pb-2 mb-1 d-flex align-items-${props.location}`}>
                     <Card.Text className="mb-0">{props.name}</Card.Text>
                     <Card.Text className="mb-0">{props.text}</Card.Text>
