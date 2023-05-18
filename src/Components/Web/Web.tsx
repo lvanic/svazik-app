@@ -63,7 +63,7 @@ export const Web = () => {
         if (activeChat.id != -1) {
             socket.on('messages', data => {
                 console.log(data);
-                
+
                 let messages: MessageModel[] = [...data.messages.items];
                 messages.reverse()
                 setActiveChat({
@@ -71,7 +71,8 @@ export const Web = () => {
                     messages: messages,
                     call: data.callRoom,
                     admins: data.room.admins,
-                    users: data.room.users
+                    users: data.room.users,
+                    shareString: data.shareString
                 })
             })
 
@@ -87,9 +88,19 @@ export const Web = () => {
         return (() => {
             socket.removeAllListeners("messages");
         })
-
     }, [activeChat.id])
 
+    useEffect(() => {
+        socket.on('removedFromRoom', (room) => {
+            setChatList([...chatList.filter(x => x.id != room.id)])
+            if (activeChat.id == room.id) {
+                setActiveChat({ ...activeChat, id: -1 })
+            }
+        })
+        return () => {
+            socket.removeAllListeners('removedFromRoom')
+        }
+    }, [activeChat.id, chatList])
     useEffect(() => {
         socket.on('messageAdded', message => {
             if (message.room.id == activeChat.id) {
@@ -99,7 +110,6 @@ export const Web = () => {
         })
 
         socket.on('messageUpdated', message => {
-
             setActiveChat({
                 ...activeChat, messages: activeChat.messages.map(x => x.id == message.id
                     ?

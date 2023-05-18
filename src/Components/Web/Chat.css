@@ -1,5 +1,5 @@
 .chat-item:hover {
-    background-color: rgba(0, 0, 0, 0.192);
+    background-color: rgba(0, 0, 0, 0.438);
     cursor: pointer;
 }
 
@@ -11,7 +11,7 @@ html[data-theme="dark"] .chat-item {
 }
 
 html[data-theme="dark"] .chat-item:hover {
-    background-color: rgba(106, 106, 106, 0.497);
+    background-color: rgb(93, 0, 93);
 }
 
 html[data-theme="light"] .text-color-change {}

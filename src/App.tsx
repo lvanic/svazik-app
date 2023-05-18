@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useNavigate,
 } from "react-router-dom";
 import HeadBar from './Components/MainPage/HeadBar';
 import MainPage from './Components/MainPage/MainPage';
@@ -12,7 +13,7 @@ import { FootBar } from './Components/MainPage/FootBar';
 import { Authentification } from './Components/Authentification/Authentification';
 import { Web } from './Components/Web/Web';
 import { Authorize } from './Middleware/Authorize';
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { UserService } from './Services/AuthentificationService';
 import { useRecoilState } from 'recoil';
 import { userState } from './Atoms/UserState';
@@ -22,12 +23,17 @@ import process from 'process';
 import { languageState } from './Atoms/LanguageState';
 import { themeState } from './Atoms/ThemeState';
 import { Languages } from './Languages/Languages';
+import { ConnectionError } from './Components/ConnectionError';
+import { ConnectToRoom } from './Components/ConnectToRoom';
+import { AllowAnonimus } from './Middleware/AllowAnonimus';
 
 function App() {
   const [user, setUser] = useRecoilState(userState);
   const [socket, setSocket] = useRecoilState(socketState);
   const [language, setLanguage] = useRecoilState(languageState)
   const [theme, setTheme] = useRecoilState(themeState)
+  const [socketError, setSocketError] = useState(false)
+  // const navigator = useNavigate()
   useEffect(() => { //установка языка и темы 
     window.process = process;
     var lang = localStorage.getItem('language')
@@ -37,18 +43,18 @@ function App() {
         words: Languages.find(x => x.name == lang)?.words
       })
     }
-    else{
+    else {
       setLanguage({
         name: 'ru',
         words: Languages.find(x => x.name == 'ru')?.words
       })
     }
     var theme = localStorage.getItem('theme')
-    if(theme){
+    if (theme) {
       setTheme(theme)
       document.documentElement.dataset.theme = theme
     }
-    else{
+    else {
       setTheme('light')
       document.documentElement.dataset.theme = 'light'
     }
@@ -57,15 +63,34 @@ function App() {
   useLayoutEffect(() => {
     UserService().then((userHandler) => {
       if (userHandler.isAuthorized) {
-        setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
+        var socket = io(`${process.env.REACT_APP_SERVER_NAME}`, {
+          // transports: ['websocket'],
           extraHeaders: {
             authorization: `${localStorage.getItem('access_token')}`
           }
-        }))
+        })
+        setSocket(socket)
         setUser(userHandler);
       }
     });
   }, [])
+
+  useEffect(() => {
+
+    socket.on('disconnect', () => {
+      if (socket.disconnected && user.isAuthorized) {
+        setSocketError(true);
+        socket.on('connect', () => {
+          setSocketError(false);
+        })
+      }
+    })
+
+    socket.on('Error', () => {
+      setUser({ email: '', isAuthorized: false, username: '' });
+      // navigator('/authentification')
+    })
+  }, [socket])
 
   return (
     <Router>
@@ -85,8 +110,14 @@ function App() {
           </>
         } />
         <Route path='/web' element={<Authorize Component={<Web />} />} />
-
+        <Route path='/connect' element={<AllowAnonimus Component={<ConnectToRoom />} />} />
       </Routes>
+      {socketError ?
+        <ConnectionError show={socketError} />
+        :
+        null
+      }
+
     </Router>
 
   );

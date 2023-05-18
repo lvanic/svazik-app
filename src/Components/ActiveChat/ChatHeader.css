@@ -21,3 +21,13 @@ html[data-theme="dark"] .button-change-theme{
     border: none!important;
     color: white
 }
+
+html[data-theme="dark"] .chat-info-header{
+    background-color: rgb(22, 22, 22);
+    color: rgb(231, 231, 231);
+}
+
+html[data-theme="dark"] .chat-info-body{
+    background-color: rgb(22, 22, 22);
+    color: rgb(231, 231, 231);
+}

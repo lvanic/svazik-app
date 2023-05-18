@@ -24,7 +24,7 @@ export const MessageInput = (props: any) => {
     }, [])
 
     const MessageSend = (e: any) => {
-        if (inputHandler.message != null) {
+        if (inputHandler.message != null && inputHandler.message!= '') {
             if (inputHandler.isUpdate) {
 
                 socket.emit('updateMessage', {
@@ -53,7 +53,7 @@ export const MessageInput = (props: any) => {
     }
 
     const SecureMessageSend = (e: any) => {
-        if (inputHandler.message != null) {
+        if (inputHandler.message != null && inputHandler.message!= '') {
             socket.emit('addMessageSecure', {
                 text: inputHandler.message,
                 room: {
@@ -86,12 +86,12 @@ export const MessageInput = (props: any) => {
                     ref={inputRef}
                     type="search"
                     placeholder={language.words?.TypeMessage}
-                    className="me-2"
+                    className="me-2 message-input-control"
                     aria-label="Search"
                     value={inputHandler.message}
                     onChange={MessageChange}
                 />
-                <Button onClick={MessageSend} variant="success">{language.words?.Send}</Button>
+                <Button onClick={MessageSend} variant="success" className="message-input-send">{language.words?.Send}</Button>
                 {
                     inputHandler.isUpdate ?
                         null

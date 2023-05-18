@@ -1,8 +1,17 @@
 html[data-theme="dark"] .drop-down-chats-back {
-    background-color: rgb(58, 58, 58);
+    background-color: rgb(94, 94, 94);
+    border: 1px solid rgb(77, 77, 77);
 }
 
 html[data-theme="dark"] .search-dropdown-card {
-    background-color: rgba(255, 255, 255, 0.307);
+    background-color: rgb(94, 94, 94);
 }
 
+html[data-theme="dark"] .search-dropdown-card:hover {
+    background-color: rgb(124, 124, 124);
+}
+
+
+html[data-theme="dark"] .search-color-change{
+    border: none;
+}

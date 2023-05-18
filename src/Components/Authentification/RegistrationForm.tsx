@@ -31,10 +31,12 @@ export const RegistrationForm = (props: any) => {
     useEffect(() => {
         if (confirmPassword != password) {
             setAlertMessage('Пароли не совпадают')
-        }
-        else {
+        } else if (password.length < 6) {
+            setAlertMessage('Введите более надежный пароль')
+        } else {
             setAlertMessage('')
         }
+
     }, [confirmPassword, password])
     const Register = async () => {
         if (canRegister) {

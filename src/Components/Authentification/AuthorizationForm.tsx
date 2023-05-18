@@ -21,17 +21,22 @@ export const AuthorizationForm = (props: any) => {
     const [language, setLanguage] = useRecoilState(languageState);
 
     const Authorization = async (e: any) => {
-        const userHandler = await AuthorizationService(email, password);
-        if (userHandler.isAuthorized) {
-            setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
-                extraHeaders: {
-                    authorization: `${localStorage.getItem('access_token')}`
-                }
-            }).connect());
-            setUser(userHandler);
-        }
-        else {
-            setErrorMessage(getError.userNotFound)
+        if (email != '' && password != '') {
+            const userHandler = await AuthorizationService(email, password);
+            if (userHandler.isAuthorized) {
+                setSocket(io(`${process.env.REACT_APP_SERVER_NAME}`, {
+                    // transports: ['websocket'],
+                    extraHeaders: {
+                        authorization: `${localStorage.getItem('access_token')}`
+                    }
+                }).connect());
+                setUser(userHandler);
+            }
+            else {
+                setErrorMessage(getError.userNotFound)
+            }
+        } else {
+            setErrorMessage(getError.applyAllFields)
         }
     }
 

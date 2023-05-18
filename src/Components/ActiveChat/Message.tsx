@@ -61,6 +61,7 @@ export const Message = (props: any) => {
             message:
                 { id: props.id }
         })
+        setShowContextMenu(false);
     }
 
     const editMessage = (id: number) => {
@@ -69,10 +70,12 @@ export const Message = (props: any) => {
             isUpdate: true,
             idUpdateMessage: props.id
         })
+        setShowContextMenu(false);
     }
 
     const screamMessage = (id: number) => {
-        window.location.href = ""
+        // window.location.href = ""
+        setShowContextMenu(false);
     }
 
     useEffect(() => { //смещение падингом
@@ -87,7 +90,7 @@ export const Message = (props: any) => {
         //todo custom menu
         <div key={props.id}>
             <div onContextMenu={onMessageContextClick} ref={messageRef} className={`message-field d-flex align-items-center justify-content-${props.location}`}>
-                <Card className={`ps-${5 - position} pe-${position} pt-2 pb-2 mb-1 d-flex align-items-${props.location}`}>
+                <Card className={`ps-${5 - position} pe-${position} pt-2 pb-2 mb-1 d-flex align-items-${props.location} message-handler-${props.location}`}>
                     <Card.Text className="mb-0">{props.name}</Card.Text>
                     <Card.Text className="mb-0">{props.text}</Card.Text>
                 </Card>
@@ -105,7 +108,7 @@ export const Message = (props: any) => {
                         isAdmin ?
                             null
                             :
-                            <Dropdown.Item onClick={handleClick} className="d-flex justify-content-around context-menu-item" name="Edit">
+                            <Dropdown.Item onClick={(e: any) => editMessage(props.id)} className="d-flex justify-content-around context-menu-item" name="Edit">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
@@ -115,7 +118,7 @@ export const Message = (props: any) => {
                             </Dropdown.Item>
                     }
 
-                    <Dropdown.Item onClick={handleClick} className="d-flex justify-content-around context-menu-item" name="Scream">
+                    <Dropdown.Item onClick={(e: any) => screamMessage(props.id)} className="d-flex justify-content-around context-menu-item" name="Scream">
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-square-heart" viewBox="0 0 16 16">
                                 <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12ZM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z" />
@@ -125,7 +128,7 @@ export const Message = (props: any) => {
                         <div>{language.words?.Scream}</div>
                     </Dropdown.Item>
 
-                    <Dropdown.Item onClick={handleClick} className="d-flex justify-content-around context-menu-item" name="Delete">
+                    <Dropdown.Item onClick={(e: any) => deleteMessage(props.id)} className="d-flex justify-content-around context-menu-item" name="Delete">
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />

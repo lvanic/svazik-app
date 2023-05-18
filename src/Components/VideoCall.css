@@ -1,0 +1,7 @@
+html[data-theme="dark"] .call-container {
+    background-color: rgb(22, 22, 22);
+}
+
+html[data-theme="dark"] .call-video {
+    background-color: rgb(22, 22, 22);
+}

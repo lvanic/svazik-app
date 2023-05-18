@@ -15,16 +15,29 @@
     background-color: white;
 }
 
-#side-bar-handler::-webkit-scrollbar {
+html[data-theme="light"] #side-bar-handler::-webkit-scrollbar {
     width: 7px;
     visibility: hidden;
 }
 
-#side-bar-handler::-webkit-scrollbar-thumb {
+html[data-theme="dark"] #side-bar-handler::-webkit-scrollbar {
+    background-color: rgb(22, 22, 22);
+    width: 7px;
+    /* visibility: hidden; */
+}
+
+html[data-theme="light"] #side-bar-handler::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: #0000002e;
     visibility: hidden;
 }
+
+html[data-theme="dark"] #side-bar-handler::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #393939;
+    visibility: hidden;
+}
+
 
 #side-bar-handler:hover#side-bar-handler::-webkit-scrollbar-thumb {
     visibility: visible;
@@ -38,9 +51,9 @@
 html[data-theme="light"] #chat-cards {}
 
 html[data-theme="dark"] #chat-cards {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgb(22, 22, 22)!important;
 }
-
+/* buttons */
 html[data-theme="dark"] .button-change-color {
     background-color: rgba(0, 0, 0, 0);
     color: white;

@@ -43,6 +43,15 @@ export const Languages =
                 ThirdPersons: 'Мы не передаем вашу почту 3 лицам',
                 Delete: 'Удалить',
                 Scream: 'Крик души',//VideoCall
+                Users:'Список пользователей:',
+                ShareString:'Ссылка для подключения: ',
+                Description:'Описание',
+                SearchUser:'Поиск по имени пользователя',
+                Sure:'Вы уверены?',
+                Deleted:'Удалено',
+                Canceled:'Отменено',
+                Copy:'Копировать',
+                CopySucsess:'Скопированно',
                 CardInfo: [
                     {
                         id: 0,
@@ -119,6 +128,15 @@ export const Languages =
                 ThirdPersons: 'We do not share your mail with 3 persons',
                 Delete: 'Delete',
                 Scream: 'Cry from the heart',
+                Users:'List of users:',
+                ShareString:'Share string: ',
+                Description:'Описание',
+                SearchUser:'Search by username',
+                Sure:'Are you sure?',
+                Deleted:'Deleted',
+                Canceled:'Canceled',
+                Copy:'Copy',
+                CopySucsess:'Copy sucsess',
                 CardInfo: [
                     {
                         id: 0,

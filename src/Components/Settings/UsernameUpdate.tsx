@@ -3,7 +3,7 @@ import { Button, Form } from "react-bootstrap"
 import { useRecoilState } from "recoil"
 import { userState } from "../../Atoms/UserState"
 import { languageState } from "../../Atoms/LanguageState"
-
+import './UsernameUpdate.css'
 export const UsernameUpdate = (props: any) => {
     const [language, setLanguage] = useRecoilState(languageState)
     const [user, setUser] = useRecoilState(userState)
@@ -28,7 +28,7 @@ export const UsernameUpdate = (props: any) => {
                     isUpdate ?
                         <Form.Control value={username} onChange={onUsernameChange} />
                         :
-                        <Form.Text style={{color:'white'}}> {username}</Form.Text>
+                        <Form.Text className="username-text-chage"> {username}</Form.Text>
                 }
             </div>
             <Button className="ps-1 pe-1" onClick={usernameUpdate} >{language.words?.Edit}</Button>

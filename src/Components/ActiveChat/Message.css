@@ -25,9 +25,13 @@
     width: 7px;
     visibility: hidden;
 }
-.messages::-webkit-scrollbar-thumb {
+html[data-theme="dark"] .messages::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: #ffffff70;
+    background-color: #ffffff3a;
+}
+html[data-theme="light"] .messages::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #ffffffa7;
 }
 
 .message-input {
@@ -37,21 +41,43 @@
     padding-left: 10%;
 }
 
+html[data-theme="light"] .message-input-control{
+
+}
+
+html[data-theme="dark"] .message-input-control{
+    background-color: rgb(22, 22, 22)!important;
+    color: rgb(231, 231, 231);
+    border: none;
+}
+
+html[data-theme="dark"] .message-input-send{
+    background-color: rgb(93, 0, 93);
+    border: none;
+}
+
+html[data-theme="dark"] .message-handler-start{
+    background-color: rgb(61, 61, 61);
+    color: rgb(231, 231, 231)
+}
+
+html[data-theme="dark"] .message-handler-end{
+    background-color: rgb(93, 0, 93);
+    color: rgb(231, 231, 231)
+}
+
+
 .selected-message{
     background-color: rgba(49, 48, 48, 0.473);
 }
 
 .context-message{
     transition: all 0.3s ease;
-    /* height: 80px; */
-    /* width: 300px; */
     background-color: rgb(255, 255, 255);
     border-radius: 20px;
     display: flex;
-    /* flex-direction: column; */
     align-items: center;
     width: 200px;
-    /* height: 120px; */
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: stretch;

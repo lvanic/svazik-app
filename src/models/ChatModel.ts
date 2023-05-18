@@ -8,6 +8,7 @@ export class ChatModel {
     users: UserModel[];
     admins: UserModel[];
     messages: MessageModel[];
+    shareString: string;
     call: {
         peersUsers: [
             {
@@ -17,7 +18,7 @@ export class ChatModel {
         ]
     }
 
-    constructor(_id: number, _name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[], _call: any) {
+    constructor(_id: number, _name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[], _call: any, _shareString:string) {
         this.id = _id;
         this.name = _name;
         this.description = _description;
@@ -25,5 +26,6 @@ export class ChatModel {
         this.admins = _admins;
         this.messages = _messages;
         this.call = _call;
+        this.shareString = _shareString;
     }
 }
