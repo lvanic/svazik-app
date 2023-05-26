@@ -9,6 +9,7 @@ export class ChatModel {
     admins: UserModel[];
     messages: MessageModel[];
     shareString: string;
+    onlineCount: number;
     call: {
         peersUsers: [
             {
@@ -18,7 +19,7 @@ export class ChatModel {
         ]
     }
 
-    constructor(_id: number, _name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[], _call: any, _shareString:string) {
+    constructor(_id: number, _name: string, _description: string, _users: UserModel[], _admins: UserModel[], _messages: MessageModel[], _call: any, _shareString: string, _onlineCount: number) {
         this.id = _id;
         this.name = _name;
         this.description = _description;
@@ -27,5 +28,6 @@ export class ChatModel {
         this.messages = _messages;
         this.call = _call;
         this.shareString = _shareString;
+        this.onlineCount = _onlineCount;
     }
 }

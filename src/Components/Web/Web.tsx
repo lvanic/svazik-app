@@ -72,7 +72,8 @@ export const Web = () => {
                     call: data.callRoom,
                     admins: data.room.admins,
                     users: data.room.users,
-                    shareString: data.shareString
+                    shareString: data.shareString,
+                    onlineCount: data.onlineCount
                 })
             })
 

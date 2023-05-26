@@ -52,6 +52,7 @@ export const Languages =
                 Canceled:'Отменено',
                 Copy:'Копировать',
                 CopySucsess:'Скопированно',
+                Online:'Онлайн',
                 CardInfo: [
                     {
                         id: 0,
@@ -137,6 +138,7 @@ export const Languages =
                 Canceled:'Canceled',
                 Copy:'Copy',
                 CopySucsess:'Copy sucsess',
+                Online:'Online',
                 CardInfo: [
                     {
                         id: 0,

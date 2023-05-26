@@ -43,6 +43,21 @@ export const ActiveChatHeader = (props: any) => {
     }, [activeChat, user])
 
     useEffect(() => {
+        socket.on('userLeaved', (data) => {
+            setActiveChat({ ...activeChat, onlineCount: activeChat.onlineCount - 1 })
+        })
+
+        socket.on('userJoined', (data) => {
+            setActiveChat({ ...activeChat, onlineCount: activeChat.onlineCount + 1 })
+        })
+
+        return () => {
+            socket.removeAllListeners('userLeaved')
+            socket.removeAllListeners('userJoined')
+        }
+    }, [activeChat])
+
+    useEffect(() => {
         return (() => {
             props.setIsModalOpen(false)
         })
@@ -88,7 +103,7 @@ export const ActiveChatHeader = (props: any) => {
     }
     return (
         <>
-            <Navbar bg="light" expand="lg" className="border d-dlex justify-content-start" id="chat-header">
+            <Navbar bg="light" expand="lg" className="border pt-0 pb-0 d-dlex justify-content-start" id="chat-header">
                 {
                     props.isSideBarOpen ?
                         null
@@ -100,8 +115,9 @@ export const ActiveChatHeader = (props: any) => {
                         </Button>
                 }
                 <Nav onClick={handleOpen}>
-                    <Nav className="d-flex flex-column">
-                        <Navbar.Brand className="ms-5 text-change-theme">{activeChat.name}</Navbar.Brand>
+                    <Nav className=" ms-5 d-flex flex-column">
+                        <Navbar.Brand className="pt-0 pb-0 text-change-theme">{activeChat.name}</Navbar.Brand>
+                        <div className="p-0 m-0" style={{ color: 'green' }}>{language.words?.Online}: {activeChat.onlineCount}</div>
                     </Nav>
                 </Nav>
                 <Nav className="me-auto">

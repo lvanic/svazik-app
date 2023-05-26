@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Card } from "react-bootstrap";
 import Button from "react-bootstrap/esm/Button";
 import { useRecoilState } from "recoil";
@@ -55,16 +55,15 @@ export const VideoCall = (props: any) => {
         }
     }, [peers])
 
+
     const initializePeer = async () => {
         var options = {
             config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] },
             stream: true
         }
+
         const peerHandler = new Peer(options)
         setPeer(peerHandler);
-    
-        console.log(peerHandler);
-        
         peerHandler.on('open', (id) => {
             setMyPeerId(id)
             if (props.isConnectToCall || props.receivingCall) {
@@ -82,22 +81,15 @@ export const VideoCall = (props: any) => {
 
             if (props.isConnectToCall || props.receivingCall) {
                 socket.on('peers', (data: any) => {
-
                     setCallerPeersId(data.peersUsers.map((x: any) => (
                         {
                             peerId: x.peerId
                         }
                     )))
-
                     data.peersUsers.map((peerUser: any) => {
-                        console.log(peerUser.peerId);
-                        console.log(myStream);
                         const call = peerHandler.call(peerUser.peerId, myStream);
-                        
                         setCalls([...calls, call])
                         call.on('stream', (remoteStream: MediaStream) => {
-                            remoteStream.onaddtrack = () => alert(1)
-                            console.log('remote stream1: ', remoteStream.getVideoTracks());
                             setPeers((prevState) => {
                                 return { ...prevState, [call.peer]: remoteStream };
                             });
@@ -108,8 +100,6 @@ export const VideoCall = (props: any) => {
                 const call = peerHandler.call(myPeerId, myStream);
                 setCalls([...calls, call])
                 call.on('stream', (remoteStream: MediaStream) => {
-
-                    console.log('remote stream2: ', remoteStream.getVideoTracks());
                     setPeers((prevState) => {
                         return { ...prevState, [call.peer]: remoteStream };
                     });
@@ -140,7 +130,7 @@ export const VideoCall = (props: any) => {
         return () => {
             peerHandler.disconnect();
         };
-    };
+    }
 
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({ audio: true, video: true })
@@ -166,7 +156,7 @@ export const VideoCall = (props: any) => {
 
     useEffect(() => {
         console.log(myStream);
-        
+
         return () => {
             if (myStream) {
                 myStream.getTracks().forEach((track: any) => {
@@ -185,14 +175,14 @@ export const VideoCall = (props: any) => {
         }
     }, [peer])
 
-    const callPeer = async () => {
+    const callPeer = useCallback(async () => {
         if (!peer) {
             await initializePeer();
         }
-        else{
+        else {
             // alert(peer)
         }
-    };
+    }, [initializePeer])
 
     const handleScreenShareClick = () => {
         setScreenShare(!isScreenShare)

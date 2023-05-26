@@ -15,7 +15,6 @@ export const ConnectionError = (props: any) => {
             console.log('socket is disconnect:', socket.disconnected);
         }, 2000)
         return () => {
-
             joinRoom(activeChat.id, socket, 1)
             clearInterval(connect)
         }
