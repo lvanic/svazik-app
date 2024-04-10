@@ -1,9 +1,18 @@
 import { atom } from "recoil";
-import { io, Socket } from "socket.io-client";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
-let initValue = io();
-export const socketState = atom<Socket>({
-  key: 'socket',
+let initValue: HubConnection = new HubConnectionBuilder()
+  .withUrl("http://localhost:3000")
+  .build();
+
+export const socketState = atom({
+  key: "socket",
   default: initValue,
   dangerouslyAllowMutability: true,
+  effects: [
+    (val) => {
+      val.onSet(async (hub) => hub.start());
+      return () => {};
+    },
+  ],
 });

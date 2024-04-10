@@ -1,9 +1,9 @@
-.messages .justify-content-start{
+/* .messages .justify-content-start{
         padding-right: 25%;
 }
 .messages .justify-content-end{
     padding-left: 25%;
-}
+} */
 
 .message-handler {
     display: flex;

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@microsoft/signalr": "^8.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -14,6 +15,7 @@
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "dotenv": "^16.0.3",
+    "firebase": "^10.10.0",
     "jsencrypt": "^3.3.2",
     "open-easyrtc": "^2.0.18",
     "openpgp": "^5.7.0",
@@ -23,6 +25,7 @@
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-sidebar-menu": "^2.0.3",
     "react-dom": "^18.2.0",
+    "react-responsive": "^10.0.0",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
     "react-slideshow-image": "^4.2.1",
@@ -33,6 +36,8 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "sweetalert2": "^11.7.5",
+    "three": "^0.163.0",
+    "threejs-examples": "^60.0.0",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -59,5 +64,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/three": "^0.163.0"
   }
 }

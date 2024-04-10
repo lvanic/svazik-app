@@ -19,7 +19,7 @@ export const CreateRoom = (props: any) => {
 
         try {
             if (name != '' && description != '') {
-                socket.emit('createRoom', object)
+                socket.invoke('CreateRoom', object)
                 setName('')
                 setDescription('')
                 props.handleClose()

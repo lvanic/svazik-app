@@ -53,6 +53,7 @@ export const Languages =
                 Copy:'Копировать',
                 CopySucsess:'Скопированно',
                 Online:'Онлайн',
+                Upload: 'Загрузить',
                 CardInfo: [
                     {
                         id: 0,
@@ -139,6 +140,7 @@ export const Languages =
                 Copy:'Copy',
                 CopySucsess:'Copy sucsess',
                 Online:'Online',
+                Upload: 'Upload',
                 CardInfo: [
                     {
                         id: 0,

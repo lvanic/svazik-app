@@ -15,7 +15,7 @@ export const LanguageSelector = (props: any) => {
     return (
         <Form.Select onChange={onLanguageSelect}>
             {langArray.map((lang) => (
-                <option value={lang.val} selected={language.name == lang.val ? true : false}>{lang.desk}</option>
+                <option key={lang.val} value={lang.val} selected={language.name == lang.val ? true : false}>{lang.desk}</option>
             ))}
         </Form.Select>
     )

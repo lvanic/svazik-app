@@ -1,6 +1,7 @@
 export const requests ={
-    register: '/auth/register',
-    authorization: '/auth/login',
-    paginate: '/paginateRooms',
-    user: '/auth/user'
+    register: '/api/auth/register',
+    authorization: '/api/auth/login',
+    paginate: '/api/paginateRooms',
+    user: '/api/auth/user',
+    uploadAvatar: '/api/upload/avatar'
 }
