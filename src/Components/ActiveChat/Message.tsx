@@ -7,6 +7,7 @@ import { userState } from "../../Atoms/UserState";
 import { inputState } from "../../Atoms/InputState";
 import { languageState } from "../../Atoms/LanguageState";
 import { socketState } from "../../Atoms/SocketState";
+import { Attachment } from "../Utils/Attachment";
 export const Message = (props: any) => {
   const [position, setPosition] = useState<any>(1);
   const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
@@ -25,7 +26,7 @@ export const Message = (props: any) => {
 
   const onMessageContextClick = (e: any) => {
     e.preventDefault();
-    if (props.name == user.username) {
+    if (props.message.user.username == user.username) {
       setDropDownCoords({ X: e.clientX, Y: e.clientY });
       setIsAdmin(false);
       setShowContextMenu(true);
@@ -39,17 +40,16 @@ export const Message = (props: any) => {
   };
 
   const handleClick = (e: any) => {
-    // Обработка выбранного пункта меню
     console.log(e.target.name);
     switch (e.target.name) {
       case "Edit":
-        editMessage(props.id);
+        editMessage(props.message.id);
         break;
       case "Scream":
-        screamMessage(props.id);
+        screamMessage(props.message.id);
         break;
       case "Delete":
-        deleteMessage(props.id);
+        deleteMessage(props.message.id);
         break;
       default:
         console.log("No action");
@@ -60,16 +60,16 @@ export const Message = (props: any) => {
 
   const deleteMessage = (id: number) => {
     socket.send("DeleteMessage", {
-      id: props.id,
+      id: props.message.id,
     });
     setShowContextMenu(false);
   };
 
   const editMessage = (id: number) => {
     setInputState({
-      message: props.text,
+      message: props.message.text,
       isUpdate: true,
-      idUpdateMessage: props.id,
+      idUpdateMessage: props.message.id,
     });
     setShowContextMenu(false);
   };
@@ -103,8 +103,9 @@ export const Message = (props: any) => {
             props.location
           } message-handler-${props.location}`}
         >
-          <Card.Text className="mb-0">{props.name}</Card.Text>
-          <Card.Text className="mb-0">{props.text}</Card.Text>
+          <Card.Text className="mb-0">{props.message.user.username}</Card.Text>
+          {props.message.attacment && <Attachment image={props.message.attacment}/>}
+          <Card.Text className="mb-0">{props.message.text}</Card.Text>
         </Card>
       </div>
       {showContextMenu && (

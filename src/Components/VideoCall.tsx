@@ -33,7 +33,10 @@ export const VideoCall = (props: any) => {
   }, [myStream]);
 
   useEffect(() => {
+    console.log("REGISTER");
     socket.on("userDisconected", (data: any) => {
+      console.log(data);
+
       setPeers((prevState) => {
         const updatedPeers = { ...prevState };
         delete updatedPeers[data.peerId];
@@ -41,6 +44,13 @@ export const VideoCall = (props: any) => {
       });
       console.log("peerUpdate");
     });
+    return () => {
+      console.log("UNREGISTER");
+      socket.off("userDisconected");
+    };
+  }, [socket]);
+
+  useEffect(() => {
     socket.on("trackChanged", (data: any) => {});
 
     Object.keys(peers).forEach((peerId: any) => {
@@ -50,7 +60,6 @@ export const VideoCall = (props: any) => {
     });
     console.log(peers);
     return () => {
-      socket.off("userDisconected");
       socket.off("trackChanged");
     };
   }, [peers]);
@@ -69,12 +78,14 @@ export const VideoCall = (props: any) => {
     peerHandler.on("open", (id) => {
       setMyPeerId(id);
       if (props.isConnectToCall || props.receivingCall) {
-        socket.invoke("connectRoom", {
+        socket.send("connectRoom", {
           peerId: id,
           room: activeChat,
         });
       } else {
-        socket.invoke("callRequest", {
+        console.log(id, activeChat);
+        
+        socket.send("callRequest", {
           peerId: id,
           room: activeChat,
         });
@@ -82,11 +93,16 @@ export const VideoCall = (props: any) => {
 
       if (props.isConnectToCall || props.receivingCall) {
         socket.on("peers", (data: any) => {
+          console.log(data);
+
           setCallerPeersId(
-            data.peersUsers.map((x: any) => ({
-              peerId: x.peerId,
-            }))
+            data.peersUsers
+              .filter((x: any) => x.peerId != myPeerId)
+              .map((x: any) => ({
+                peerId: x.peerId,
+              }))
           );
+
           data.peersUsers.map((peerUser: any) => {
             const call = peerHandler.call(peerUser.peerId, myStream);
             setCalls([...calls, call]);
@@ -142,7 +158,7 @@ export const VideoCall = (props: any) => {
       });
 
     return () => {
-      socket.send("disconectCall");
+      socket.send("DisconnectCall", { PeerId: myPeerId, Room: activeChat });
       setMyStream(null);
       setPeer(null);
     };
@@ -150,7 +166,7 @@ export const VideoCall = (props: any) => {
 
   useEffect(() => {
     return () => {
-      socket.invoke("refreshRoom", { id: activeChat.id });
+      socket.send("refreshRoom", { id: activeChat.id });
     };
   }, [activeChat.id]);
 
@@ -175,75 +191,77 @@ export const VideoCall = (props: any) => {
     };
   }, [peer]);
 
-  const callPeer = useCallback(async () => {
+  const callPeer = async () => {
     if (!peer) {
       await initializePeer();
     } else {
       // alert(peer)
     }
-  }, [initializePeer]);
+  }
 
   const handleScreenShareClick = () => {
-    if (callStarted) {
+    console.log(callStarted);
+
+    if (true) {
       setScreenShare(!isScreenShare);
-      if (myStream) {
-        if (!isScreenShare) {
-          navigator.mediaDevices
-            .getDisplayMedia({ video: true })
-            .then((screenStream) => {
-              // Получение видеотрека с экрана
-              calls.map((conn) => {
-                const screenVideoTrack = screenStream.getVideoTracks()[0];
+      // if (myStream) {
+      if (!isScreenShare) {
+        navigator.mediaDevices
+          .getDisplayMedia({ video: true })
+          .then((screenStream) => {
+            // Получение видеотрека с экрана
+            calls.map((conn) => {
+              const screenVideoTrack = screenStream.getVideoTracks()[0];
 
-                myStream.getVideoTracks()[0].stop();
-                myStream.removeTrack(myStream.getVideoTracks()[0]);
-                myStream.addTrack(screenVideoTrack);
+              myStream.getVideoTracks()[0].stop();
+              myStream.removeTrack(myStream.getVideoTracks()[0]);
+              myStream.addTrack(screenVideoTrack);
 
-                // Отправка обновленного видеопотока с экрана через PeerJS
-                const videoSender = conn.peerConnection
-                  .getSenders()
-                  .find((sender) => {
-                    if (sender.track != null) {
-                      return sender.track.kind === "video";
-                    }
-                  });
-                if (videoSender) videoSender.replaceTrack(screenVideoTrack);
-              });
-            })
-            .catch((error) => {
-              console.error("Ошибка при получении потока с экрана:", error);
-              setScreenShare(false);
+              // Отправка обновленного видеопотока с экрана через PeerJS
+              const videoSender = conn.peerConnection
+                .getSenders()
+                .find((sender) => {
+                  if (sender.track != null) {
+                    return sender.track.kind === "video";
+                  }
+                });
+              if (videoSender) videoSender.replaceTrack(screenVideoTrack);
             });
-        } else {
-          navigator.mediaDevices
-            .getUserMedia({ video: true })
-            .then((screenStream) => {
-              // Получение видеотрека с экрана
-              calls.map((conn) => {
-                const screenVideoTrack = screenStream.getVideoTracks()[0];
+          })
+          .catch((error) => {
+            console.error("Ошибка при получении потока с экрана:", error);
+            setScreenShare(false);
+          });
+      } else {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((screenStream) => {
+            // Получение видеотрека с экрана
+            calls.map((conn) => {
+              const screenVideoTrack = screenStream.getVideoTracks()[0];
 
-                myStream.getVideoTracks()[0].stop();
-                myStream.removeTrack(myStream.getVideoTracks()[0]);
-                myStream.addTrack(screenVideoTrack);
+              myStream.getVideoTracks()[0].stop();
+              myStream.removeTrack(myStream.getVideoTracks()[0]);
+              myStream.addTrack(screenVideoTrack);
 
-                // Отправка обновленного видеопотока с экрана через PeerJS
-                const videoSender = conn.peerConnection
-                  .getSenders()
-                  .find((sender) => {
-                    if (sender.track != null) {
-                      return sender.track.kind === "video";
-                    }
-                  });
-                if (videoSender) videoSender.replaceTrack(screenVideoTrack);
-              });
-            })
-            .catch((error) => {
-              console.error("Ошибка при получении потока с экрана:", error);
-              setScreenShare(true);
+              // Отправка обновленного видеопотока с экрана через PeerJS
+              const videoSender = conn.peerConnection
+                .getSenders()
+                .find((sender) => {
+                  if (sender.track != null) {
+                    return sender.track.kind === "video";
+                  }
+                });
+              if (videoSender) videoSender.replaceTrack(screenVideoTrack);
             });
-        }
+          })
+          .catch((error) => {
+            console.error("Ошибка при получении потока с экрана:", error);
+            setScreenShare(true);
+          });
       }
     }
+    // }
   };
 
   const handleAudioClick = () => {
@@ -303,21 +321,25 @@ export const VideoCall = (props: any) => {
                         }}
                       />
 
-                      {Object.keys(peers).map((peerId: any, index) => (
-                        <video
-                          ref={(videoEl) =>
-                            (usersVideos.current[peerId] = videoEl)
-                          }
-                          autoPlay
-                          style={{
-                            maxWidth: "25rem",
-                            width: "100%",
-                            height: "auto",
-                            marginLeft: "0.5rem",
-                            marginRight: "0.5rem",
-                          }}
-                        />
-                      ))}
+                      {Object.keys(peers).map(
+                        (peerId: any, index) =>
+                          peer && (
+                            <video
+                              key={peerId}
+                              ref={(videoEl) =>
+                                (usersVideos.current[peerId] = videoEl)
+                              }
+                              autoPlay
+                              style={{
+                                maxWidth: "25rem",
+                                width: "100%",
+                                height: "auto",
+                                marginLeft: "0.5rem",
+                                marginRight: "0.5rem",
+                              }}
+                            />
+                          )
+                      )}
                     </div>
                     <div
                       style={{

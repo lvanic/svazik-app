@@ -131,15 +131,15 @@ export const Web = () => {
   useEffect(() => {
     socket.on("messageAdded", (message) => {
       if (message.room.id == activeChat.id) {
-        let messageHandler = new MessageModel(
-          message.id,
-          message.text,
-          message.user,
-          message.created_at
-        );
+        // let messageHandler = new MessageModel(
+        //   message.id,
+        //   message.text,
+        //   message.user,
+        //   message.created_at,
+        // );
         setActiveChat({
           ...activeChat,
-          messages: [...activeChat.messages, messageHandler],
+          messages: [...activeChat.messages, message],
         });
       }
     });

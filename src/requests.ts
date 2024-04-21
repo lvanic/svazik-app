@@ -3,5 +3,6 @@ export const requests ={
     authorization: '/api/auth/login',
     paginate: '/api/paginateRooms',
     user: '/api/auth/user',
-    uploadAvatar: '/api/upload/avatar'
+    uploadAvatar: '/api/upload/avatar',
+    uploadAttachment: '/api/upload/message-image',
 }

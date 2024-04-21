@@ -40,14 +40,22 @@ export const MessageArea = (props: any) => {
         <div key="message-handler" className="message-handler">
           <div className="messages" ref={endChatRef} onScroll={handleScroll}>
             {activeChat.messages?.map((message: any) => {
-              if (user.username == message.user.username) {
+              if(message.messageType == 1){
+                return (
+                  <div className="d-flex justify-content-center">
+                    <Message
+                      message={message}
+                      location="center"
+                    />
+                    <div className="m-2" />
+                  </div>
+                );
+              }
+              else if (user.username == message.user.username) {
                 return (
                   <div className="d-flex justify-content-end">
                     <Message
-                      image={message.user.image}
-                      text={message.text}
-                      name={message.user.username}
-                      id={message.id}
+                      message={message}
                       location="end"
                     />
                     <div className="m-2" />
@@ -60,10 +68,7 @@ export const MessageArea = (props: any) => {
                     <AvatarImage image={message.user.image} size="sm" />
                     <div className="m-2" />
                     <Message
-                      image={message.user.image}
-                      text={message.text}
-                      name={message.user.username}
-                      id={message.id}
+                      message={message}
                       location="start"
                     />
                   </div>
